@@ -128,4 +128,57 @@ public class TestResultSet
 		Assert.assertTrue(true);
 	}
 
+
+	@Test
+	public void findTestLimit() {
+		ResultSet rs;
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  ", \"limit\" : 10" +
+				  ", \"batchSize\" : 150" +
+				  "}";
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(10,rowCnt);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+
+	@Test
+	public void aggregateTest() {
+		ResultSet rs;
+		final String query =
+				  "{" +
+							 "\"aggregate\":\"zips\"" +
+							 ", \"pipeline\":[" +
+							 "{ \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } },\n" +
+							 "{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }" +
+							 "]" +
+							 "}"
+				  ;
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(7,rowCnt);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
 }
