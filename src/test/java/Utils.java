@@ -37,9 +37,8 @@ public class Utils
 		ArrayList<String> columnNames = new ArrayList<>();
 		try
 		{
-			if (printRowNumber){
+			if (printRowNumber)
 				System.out.print(AdjustString("Row №", columnWidth) + " | ");
-			}
 
 			//HEADER
 			for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++)
@@ -49,7 +48,10 @@ public class Utils
 			}
 
 			System.out.print("\n");
-			char[] chars = new char[(columnWidth+3)*columnNames.size()];
+			int columnsCount = columnNames.size();
+			if (printRowNumber)
+				columnsCount++;
+			char[] chars = new char[(columnWidth+3)*columnsCount];
 			Arrays.fill(chars, '-');
 			System.out.println(new String(chars));
 
@@ -59,9 +61,8 @@ public class Utils
 				String rowStr = "";
 				counter++;
 
-				if (printRowNumber){
+				if (printRowNumber)
 					rowStr += AdjustString(counter.toString(), columnWidth) + " | ";
-				}
 
 				for (int i = 0; i < rs.getMetaData().getColumnCount(); i++)
 				{
