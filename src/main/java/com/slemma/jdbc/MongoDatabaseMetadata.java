@@ -4,15 +4,15 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
-import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.sql.*;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.RowIdLifetime;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 class MongoDatabaseMetadata implements DatabaseMetaData
 {

@@ -45,7 +45,8 @@ public class MongoForwardOnlyResultSet implements java.sql.ResultSet
 	/**
 	 * Paging size, the original result will be paged by FETCH_SIZE rows
 	 */
-	protected int FETCH_SIZE = 100;
+	//TODO: sync with mongo batch size
+	protected int FETCH_SIZE = 100000;
 	/**
 	 * The Fetched rows count at the original results
 	 */
@@ -1646,6 +1647,7 @@ public class MongoForwardOnlyResultSet implements java.sql.ResultSet
 	public boolean next() throws SQLException
 	{
 		throwIfClosed();
+
 		if (this.RowsofResult == null)
 		{
 			return false;

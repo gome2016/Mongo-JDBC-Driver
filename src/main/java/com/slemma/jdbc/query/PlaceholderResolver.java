@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 
 import java.util.LinkedHashMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**

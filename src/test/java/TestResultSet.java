@@ -84,14 +84,42 @@ public class TestResultSet
 	@Test
 	public void findTest() {
 		ResultSet rs;
-		String query = "{ \"find\" : \"restaurants\", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } }";
-//		String query = "{ \"find\" : \"restaurants\", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } }";
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  "}";
 		try {
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			Utils.printResultSet(rs);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+
+	@Test
+	public void findTestMoreOptions() {
+		ResultSet rs;
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  ", \"limit\" : 150" +
+				  ", \"batchSize\" : 150" +
+				  ", \"maxTimeMS\" : 5000" +
+				  "}";
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(150,rowCnt);
 		}
 		catch (SQLException e) {
 			this.logger.error("Exception: " + e.toString());

@@ -25,13 +25,22 @@ public class Utils
 		}
 	}
 
-	public static void printResultSet(ResultSet rs){
+	public static int printResultSet(ResultSet rs){
+		return printResultSet(rs, true);
+	}
+
+	public static int printResultSet(ResultSet rs, Boolean printRowNumber){
 
 		final int columnWidth = 10;
+		Integer counter=0;
 
 		ArrayList<String> columnNames = new ArrayList<>();
 		try
 		{
+			if (printRowNumber){
+				System.out.print(AdjustString("Row №", columnWidth) + " | ");
+			}
+
 			//HEADER
 			for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++)
 			{
@@ -48,6 +57,12 @@ public class Utils
 			while (rs.next())
 			{
 				String rowStr = "";
+				counter++;
+
+				if (printRowNumber){
+					rowStr += AdjustString(counter.toString(), columnWidth) + " | ";
+				}
+
 				for (int i = 0; i < rs.getMetaData().getColumnCount(); i++)
 				{
 					rowStr += AdjustString(rs.getString(columnNames.get(i)), columnWidth) + " | ";
@@ -60,6 +75,8 @@ public class Utils
 		{
 			e.printStackTrace();
 		}
+
+		return counter;
 	}
 
 }

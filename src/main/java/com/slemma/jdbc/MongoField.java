@@ -1,9 +1,8 @@
 package com.slemma.jdbc;
 
-import com.sun.deploy.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author Igor Shestakov.

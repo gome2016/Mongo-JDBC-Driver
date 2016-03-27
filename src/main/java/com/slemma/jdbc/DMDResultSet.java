@@ -1,12 +1,11 @@
 package com.slemma.jdbc;
 
 
-import java.sql.SQLException;
-
 import com.slemma.jdbc.DMDResultSet.DMDResultSetType;
-
 import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
 
 /**
  * This class implements the java.sql.ResultSetMetaData interface for usage in

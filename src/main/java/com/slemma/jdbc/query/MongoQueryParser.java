@@ -1,7 +1,5 @@
 package com.slemma.jdbc.query;
 
-import com.slemma.jdbc.query.MongoQuery;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

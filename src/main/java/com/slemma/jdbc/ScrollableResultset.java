@@ -1,6 +1,5 @@
 package com.slemma.jdbc;
 
-import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
