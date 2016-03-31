@@ -30,6 +30,11 @@ public class MongoField
 		return type;
 	}
 
+	public String getTypeName()
+	{
+		return ConversionHelper.getSqlTypeName(type);
+	}
+
 	public String getName()
 	{
 		return StringUtils.join(path, ".");

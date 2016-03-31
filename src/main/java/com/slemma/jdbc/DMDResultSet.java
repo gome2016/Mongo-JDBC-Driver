@@ -486,7 +486,7 @@ public class DMDResultSet extends ScrollableResultset<Object> implements
 		if (this.isClosed()) {
 			throw new SQLException("This Resultset is Closed");
 		}
-		this.ThrowCursorNotValidExeption();
+		this.ThrowIfCursorNotValidException();
 		if (this.RowsofResult == null) {
 			throw new SQLException("No Valid Rows");
 		}
@@ -540,7 +540,7 @@ public class DMDResultSet extends ScrollableResultset<Object> implements
 		if (this.isClosed()) {
 			throw new SQLException("This Resultset is Closed");
 		}
-		this.ThrowCursorNotValidExeption();
+		this.ThrowIfCursorNotValidException();
 
 		if (this.RowsofResult == null) {
 			throw new SQLException("No Valid Rows");

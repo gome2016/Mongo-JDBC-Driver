@@ -1,5 +1,8 @@
 package com.slemma.jdbc;
 
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -251,7 +254,16 @@ public class MongoPreparedStatement extends AbstractMongoStatement implements Pr
 //		throw new MongoSQLException(
 //				  "Query run took more than the specified timeout");
 
-		throw new UnsupportedOperationException();
+
+		MongoDatabase database = this.connection.getMongoClient().getDatabase(this.connection.getDatabase());
+		Document command = Document.parse(this.RunnableStatement);
+		MongoResult mongoResult =  new MongoResult(database.runCommand(command), database);
+
+		if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
+			return new MongoScrollableResultSet(mongoResult, this);
+		} else {
+			return new MongoForwardOnlyResultSet(mongoResult, this);
+		}
 	}
 
 	/**

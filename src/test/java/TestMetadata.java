@@ -89,7 +89,7 @@ public class TestMetadata
 	}
 
 	@Test
-	public void connectionGetMetadata() {
+	public void metadataGetMetadata() {
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();
 			assertNotNull(metadata);
@@ -100,7 +100,7 @@ public class TestMetadata
 	}
 
 	@Test
-	public void connectionGetCatalogSeparator() {
+	public void metadataGetCatalogSeparator() {
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();
 			assertEquals(".", metadata.getCatalogSeparator());
@@ -111,7 +111,7 @@ public class TestMetadata
 	}
 
 	@Test
-	public void connectionGetCatalogTerm() {
+	public void metadataGetCatalogTerm() {
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();
 			assertEquals("database", metadata.getCatalogTerm());
@@ -122,7 +122,7 @@ public class TestMetadata
 	}
 
 	@Test
-	public void connectionGetCatalogs() {
+	public void metadataGetCatalogs() {
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();
 			ResultSet catalogs = metadata.getCatalogs();
@@ -137,12 +137,59 @@ public class TestMetadata
 	}
 
 	@Test
-	public void connectionGetTables() {
+	public void metadataGetTables() {
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();
 			ResultSet tables = metadata.getTables("test", null, null, null);
 			assertNotNull(tables);
 			Utils.printResultSet(tables);
+		}
+		catch (SQLException e) {
+			this.logger.error("SQL exception: " + e.toString());
+		}
+	}
+
+
+	@Test
+	public void metadataGetColumnsForTable() {
+		try {
+			DatabaseMetaData metadata = this.con.getMetaData();
+			String catalog = "test";
+			String table = "zips";
+			ResultSet columnsMetaDs = metadata.getColumns(catalog, null, table, null);
+
+			assertNotNull(columnsMetaDs);
+
+			if (columnsMetaDs.next()){
+				Assert.assertEquals("_id",columnsMetaDs.getString("COLUMN_NAM"));
+				Assert.assertEquals("VARCHAR",columnsMetaDs.getString("TYPE_NAME"));
+			}
+			else {
+				Assert.fail("Incorrect resultSet");
+			}
+			if (columnsMetaDs.next()){
+				Assert.assertEquals("city",columnsMetaDs.getString("COLUMN_NAM"));
+				Assert.assertEquals("VARCHAR",columnsMetaDs.getString("TYPE_NAME"));
+			}
+			else {
+				Assert.fail("Incorrect resultSet");
+			}
+			if (columnsMetaDs.next()){
+				Assert.assertEquals("pop",columnsMetaDs.getString("COLUMN_NAM"));
+				Assert.assertEquals("INTEGER",columnsMetaDs.getString("TYPE_NAME"));
+			}
+			else {
+				Assert.fail("Incorrect resultSet");
+			}
+			if (columnsMetaDs.next()){
+				Assert.assertEquals("state",columnsMetaDs.getString("COLUMN_NAM"));
+				Assert.assertEquals("VARCHAR",columnsMetaDs.getString("TYPE_NAME"));
+			}
+			else {
+				Assert.fail("Incorrect resultSet");
+			}
+
+			Utils.printResultSet(columnsMetaDs);
 		}
 		catch (SQLException e) {
 			this.logger.error("SQL exception: " + e.toString());

@@ -58,65 +58,9 @@ public class MongoStatement extends AbstractMongoStatement implements java.sql.S
 
 		this.starttime = System.currentTimeMillis();
 
-//		Job referencedJob;
-//		// ANTLR Parsing
-//		BQQueryParser parser = new BQQueryParser(querySql, this.connection);
-//		querySql = parser.parse();
-//		try {
-//			// Gets the Job reference of the completed job with give Query
-//			referencedJob = BQSupportFuncts.startQuery(
-//					  this.connection.getBigquery(),
-//					  this.ProjectId.replace("__", ":").replace("_", "."), querySql);
-//			this.logger.debug("Executing Query: " + querySql);
-//		}
-//		catch (IOException e) {
-//			throw new MongoSQLException("Something went wrong with the query:\n" + querySql,e);
-//		}
-//		try {
-//			do {
-//				if (BQSupportFuncts.getQueryState(referencedJob,
-//						  this.connection.getBigquery(),
-//						  this.ProjectId.replace("__", ":").replace("_", ".")).equals(
-//						  "DONE")) {
-//					if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
-//						return new BQScrollableResultSet(BQSupportFuncts.getQueryResults(
-//								  this.connection.getBigquery(),
-//								  this.ProjectId.replace("__", ":").replace("_", "."),
-//								  referencedJob), this);
-//					} else {
-//						return new BQForwardOnlyResultSet(
-//								  this.connection.getBigquery(),
-//								  this.ProjectId.replace("__", ":").replace("_", "."),
-//								  referencedJob, this);
-//					}
-//				}
-//				// Pause execution for half second before polling job status
-//				// again, to
-//				// reduce unnecessary calls to the BigQUery API and lower
-//				// overall
-//				// application bandwidth.
-//				Thread.sleep(500);
-//				this.logger.debug("slept for 500" + "ms, querytimeout is: "
-//						  + this.querytimeout + "s");
-//			}
-//			while (System.currentTimeMillis() - this.starttime <= (long) this.querytimeout * 1000);
-//			// it runs for a minimum of 1 time
-//		}
-//		catch (IOException e) {
-//			throw new MongoSQLException("Something went wrong with the query:\n" + querySql,e);
-//		}
-//		catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		// here we should kill/stop the running job, but bigquery doesn't
-//		// support that :(
-//		throw new MongoSQLException(
-//				  "Query run took more than the specified timeout");
-//
 		MongoDatabase database = this.connection.getMongoClient().getDatabase(this.connection.getDatabase());
 		Document command = Document.parse(query);
 		MongoResult mongoResult =  new MongoResult(database.runCommand(command), database);
-
 
 		if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
 			return new MongoScrollableResultSet(mongoResult, this);

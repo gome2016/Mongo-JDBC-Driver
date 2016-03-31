@@ -140,39 +140,36 @@ class MongoResultsetMetaData implements ResultSetMetaData
 	/** {@inheritDoc} */
 	@Override
 	public int getPrecision(int column) throws SQLException {
-//		if (this.getColumnCount() == 0) {
-//			return 0;
-//		}
-//		String Columntype = "";
-//		try {
-//			Columntype = this.mongoResult.getSchema().getFields().get(column - 1)
-//					  .getType();
-//		}
-//		catch (IndexOutOfBoundsException e) {
-//			throw new SQLException("getPrecision(int)", e);
-//		}
-//
-//		if (Columntype.equals("FLOAT")) {
-//			return Float.MAX_EXPONENT;
-//		}
-//		else
-//		if (Columntype.equals("BOOLEAN")) {
-//			return 1; // A boolean is 1 bit length, but it asks for byte, so
-//			// 1
-//		}
-//		else
-//		if (Columntype.equals("INTEGER")) {
-//			return Integer.SIZE;
-//		}
-//		else
-//		if (Columntype.equals("STRING")) {
-//			return 64 * 1024;
-//		}
-//		else {
-//			return 0;
-//		}
+		if (this.getColumnCount() == 0) {
+			return 0;
+		}
+		String columnType = "";
+		try {
+			columnType = this.mongoResult.getFields().get(column - 1).getTypeName();
+		}
+		catch (IndexOutOfBoundsException e) {
+			throw new SQLException("getPrecision(int)", e);
+		}
 
-		throw new UnsupportedOperationException();
+		if (columnType.equals("FLOAT")) {
+			return Float.MAX_EXPONENT;
+		}
+		else
+		if (columnType.equals("BOOLEAN")) {
+			return 1; // A boolean is 1 bit length, but it asks for byte, so
+			// 1
+		}
+		else
+		if (columnType.equals("INTEGER")) {
+			return Integer.SIZE;
+		}
+		else
+		if (columnType.equals("STRING")) {
+			return 64 * 1024;
+		}
+		else {
+			return 0;
+		}
 	}
 
 	/**
@@ -185,6 +182,8 @@ class MongoResultsetMetaData implements ResultSetMetaData
 	 */
 	@Override
 	public int getScale(int column) throws SQLException {
+		//TODO; implement method
+
 //		if (this.getColumnType(column) == java.sql.Types.FLOAT) {
 //			int max = 0;
 //			for (int i = 0; i < this.mongoResult.getRows().size(); i++) {
@@ -202,7 +201,7 @@ class MongoResultsetMetaData implements ResultSetMetaData
 //			return 0;
 //		}
 
-		throw new UnsupportedOperationException();
+		return 0;
 	}
 
 	/**

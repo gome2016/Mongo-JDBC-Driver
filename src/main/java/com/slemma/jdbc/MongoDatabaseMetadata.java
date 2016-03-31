@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 *
 	 * @param mongoConnection
 	 */
-	public MongoDatabaseMetadata(MongoConnection mongoConnection) {
+	public MongoDatabaseMetadata(MongoConnection mongoConnection)
+	{
 		this.Connection = mongoConnection;
 	}
 
@@ -65,7 +67,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return true
 	 */
 	@Override
-	public boolean allTablesAreSelectable() throws SQLException {
+	public boolean allTablesAreSelectable() throws SQLException
+	{
 		return true;
 	}
 
@@ -79,7 +82,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean autoCommitFailureClosesAllResultSets() throws SQLException {
+	public boolean autoCommitFailureClosesAllResultSets() throws SQLException
+	{
 		return false;
 	}
 
@@ -92,7 +96,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean dataDefinitionCausesTransactionCommit() throws SQLException {
+	public boolean dataDefinitionCausesTransactionCommit() throws SQLException
+	{
 		return false;
 	}
 
@@ -105,7 +110,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return true
 	 */
 	@Override
-	public boolean dataDefinitionIgnoredInTransactions() throws SQLException {
+	public boolean dataDefinitionIgnoredInTransactions() throws SQLException
+	{
 		return true;
 	}
 
@@ -118,7 +124,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean deletesAreDetected(int type) throws SQLException {
+	public boolean deletesAreDetected(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -131,7 +138,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean doesMaxRowSizeIncludeBlobs() throws SQLException {
+	public boolean doesMaxRowSizeIncludeBlobs() throws SQLException
+	{
 		return false;
 	}
 
@@ -146,7 +154,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public ResultSet getAttributes(String catalog, String schemaPattern,
 											 String typeNamePattern, String attributeNamePattern)
-			  throws SQLException {
+			  throws SQLException
+	{
 		logger.debug("Function call getAttributes catalog: " +
 				  (catalog != null ? catalog : "null") + ", schemaPattern: " +
 				  (schemaPattern != null ? schemaPattern : "null") + ", typeNamePattern:" +
@@ -220,7 +229,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getBestRowIdentifier(String catalog, String schema,
-													  String table, int scope, boolean nullable) throws SQLException {
+													  String table, int scope, boolean nullable) throws SQLException
+	{
 		logger.debug("Function call getBestRowIdentifier(String,String,String,int,boolean)");
 		logger.debug("Not implemented yet returning empty resultset");
 		String[] Col = new String[8];
@@ -246,21 +256,24 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 				  DMDResultSet.DMDResultSetType.getBestRowIdentifier);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public ResultSet getCatalogs() throws SQLException {
-		MongoClient mClient = ((MongoConnection)this.getConnection()).getMongoClient();
+	public ResultSet getCatalogs() throws SQLException
+	{
+		MongoClient mClient = ((MongoConnection) this.getConnection()).getMongoClient();
 		MongoIterable<String> databaseNames = mClient.listDatabaseNames();
 		ArrayList<String> dbNames = new ArrayList<>();
 		for (String databaseName : databaseNames)
 			dbNames.add(databaseName);
 
-		if (dbNames.size()>0)
-			return new DMDResultSet(dbNames.toArray(), new String[] { "TABLE_CAT" },
+		if (dbNames.size() > 0)
+			return new DMDResultSet(dbNames.toArray(), new String[]{"TABLE_CAT"},
 					  DMDResultSet.DMDResultSetType.getCatalogs);
 		else
-			return new DMDResultSet(new String[] { null },
-					  new String[] { "TABLE_CAT" },
+			return new DMDResultSet(new String[]{null},
+					  new String[]{"TABLE_CAT"},
 					  DMDResultSet.DMDResultSetType.getCatalogs);
 	}
 
@@ -273,7 +286,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return .
 	 */
 	@Override
-	public String getCatalogSeparator() throws SQLException {
+	public String getCatalogSeparator() throws SQLException
+	{
 		return ".";
 	}
 
@@ -286,7 +300,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return project
 	 */
 	@Override
-	public String getCatalogTerm() throws SQLException {
+	public String getCatalogTerm() throws SQLException
+	{
 		return "database";
 	}
 
@@ -299,11 +314,12 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return supported clients
 	 */
 	@Override
-	public ResultSet getClientInfoProperties() throws SQLException {
-		return new DMDResultSet(new Object[][] {
-				  { "iSQL", 64, "iSQL", "http://isql.sourceforge.net/" } }
+	public ResultSet getClientInfoProperties() throws SQLException
+	{
+		return new DMDResultSet(new Object[][]{
+				  {"iSQL", 64, "iSQL", "http://isql.sourceforge.net/"}}
 
-				  , new String[] { "NAME", "MAX_LEN", "DEFAULT_VALUE", "DESCRIPTION" },
+				  , new String[]{"NAME", "MAX_LEN", "DEFAULT_VALUE", "DESCRIPTION"},
 				  DMDResultSet.DMDResultSetType.getClientInfoProperties);
 	}
 
@@ -318,7 +334,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getColumnPrivileges(String catalog, String schema,
-													 String table, String columnNamePattern) throws SQLException {
+													 String table, String columnNamePattern) throws SQLException
+	{
 		String[] Col = new String[8];
 		Col[0] = "TABLE_CAT"; // String => table catalog (may be null)
 		Col[1] = "TABLE_SCHEM"; // String => table schema (may be null)
@@ -331,16 +348,115 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 		Col[7] = "IS_GRANTABLE";// String => "YES" if grantee is permitted to
 		// grant to others;
 		// "NO" if not; null if unknown
-		return new DMDResultSet(new Object[][] { { null, null, table, "", null,
-				  "", "", "NO" } }, Col, DMDResultSet.DMDResultSetType.getColumnPrivileges);
+		return new DMDResultSet(new Object[][]{{null, null, table, "", null,
+				  "", "", "NO"}}, Col, DMDResultSet.DMDResultSetType.getColumnPrivileges);
 		// TODO we might need this more implemented.
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ResultSet getColumns(String catalog, String schemaPattern,
 										 String tableNamePattern, String columnNamePattern)
-			  throws SQLException {
+			  throws SQLException
+	{
+		int resulSetColumnCount = 6;
+
+		logger.debug("Function call getColumns...");
+		MongoClient mClient = ((MongoConnection) this.getConnection()).getMongoClient();
+
+		List<String> dbNames = new ArrayList<>();
+
+		if (StringUtils.isNotEmpty(catalog))
+			dbNames.add(catalog);
+		else
+		{
+			MongoIterable<String> databaseNames = mClient.listDatabaseNames();
+			for (String databaseName : databaseNames)
+				dbNames.add(databaseName);
+		}
+
+
+		List<MongoResult> mResults = new ArrayList<>();
+		List<String[]> data = new ArrayList<String[]>();
+		for (String dbName : dbNames)
+		{
+			MongoDatabase db = mClient.getDatabase(dbName);
+			MongoIterable<String> collectionNames = db.listCollectionNames();
+			for (String collectionName : collectionNames)
+			{
+				if (StringUtils.isNotEmpty(tableNamePattern) && !collectionName.equals(tableNamePattern))
+					continue;
+
+				String query = "{ " +
+						  "\"find\" : \"" + collectionName + "\"" +
+						  ", \"limit\" : 50" +
+						  ", \"batchSize\" : 50" +
+						  "}";
+
+				Document command = Document.parse(query);
+				MongoResult mResult = new MongoResult(db.runCommand(command), db);
+				for (MongoField field : mResult.getFields())
+				{
+					String[] columnMetadata = new String[resulSetColumnCount];
+					//TABLE_CAT
+					columnMetadata[0] = dbName;
+					//TABLE_SCHEM
+					columnMetadata[1] = dbName;
+					//TABLE_NAME
+					columnMetadata[2] = collectionName;
+					//COLUMN_NAME
+					columnMetadata[3] = field.getName();
+					//DATA_TYPE
+					columnMetadata[4] = String.valueOf(field.getType());
+					//TYPE_NAME
+					columnMetadata[5] = field.getTypeName();
+
+					data.add(columnMetadata);
+				}
+			}
+
+		}
+
+		if (data.size() > 0)
+		{
+				String[][] List = new String[data.size()][resulSetColumnCount];
+				for (int i = 0; i < data.size(); i++) {
+					List[i] = data.get(i);
+				}
+				return new DMDResultSet(List, new String[] {
+						  "TABLE_CAT", "TABLE_SCHEM", "TABLE_NAME",
+						  "COLUMN_NAME", "DATA_TYPE", "TYPE_NAME",
+//								 "COLUMN_SIZE", "BUFFER_LENGTH", "DECIMAL_DIGITS",
+//								 "NUM_PREC_RADIX", "NULLABLE", "REMARKS",
+//								 "COLUMN_DEF", "SQL_DATA_TYPE", "SQL_DATETIME_SUB",
+//								 "CHAR_OCTET_LENGTH", "ORDINAL_POSITION",
+//								 "IS_NULLABLE", "SCOPE_CATLOG", "SCOPE_SCHEMA",
+//								 "SCOPE_TABLE", "SOURCE_DATA_TYPE","IS_AUTOINCREMENT",
+				}, DMDResultSet.DMDResultSetType.getColumns);
+		}
+		else
+		{
+			return new DMDResultSet(new String[][]{
+					  {
+								 null, null, null, null, null, null
+//								, null, null, null, null, null, null
+// 							, null, null, null, null, null, null
+// 							, null, null, null,null, null
+					  }},
+					  new String[]{
+								 "TABLE_CAT", "TABLE_SCHEM", "TABLE_NAME",
+								 "COLUMN_NAME", "DATA_TYPE", "TYPE_NAME",
+//								 "COLUMN_SIZE", "BUFFER_LENGTH", "DECIMAL_DIGITS",
+//								 "NUM_PREC_RADIX", "NULLABLE", "REMARKS",
+//								 "COLUMN_DEF", "SQL_DATA_TYPE", "SQL_DATETIME_SUB",
+//								 "CHAR_OCTET_LENGTH", "ORDINAL_POSITION",
+//								 "IS_NULLABLE", "SCOPE_CATLOG", "SCOPE_SCHEMA",
+//								 "SCOPE_TABLE", "SOURCE_DATA_TYPE","IS_AUTOINCREMENT",
+					  }, DMDResultSet.DMDResultSetType.getColumns);
+		}
+
 //		logger.debug("Function call getColumns"
 //				  + "catalog: " + (catalog != null ? catalog : "null") +
 //				  ", schemaPattern: " + (schemaPattern != null ? schemaPattern : "null" )+
@@ -493,13 +609,14 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 //								 "SCOPE_TABLE", "SOURCE_DATA_TYPE",
 //								 "IS_AUTOINCREMENT", }, DMDResultSet.DMDResultSetType.getColumns);
 //		}
-
-		throw new UnsupportedOperationException();
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public java.sql.Connection getConnection() throws SQLException {
+	public java.sql.Connection getConnection() throws SQLException
+	{
 		return this.Connection;
 	}
 
@@ -514,7 +631,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public ResultSet getCrossReference(String parentCatalog,
 												  String parentSchema, String parentTable, String foreignCatalog,
-												  String foreignSchema, String foreignTable) throws SQLException {
+												  String foreignSchema, String foreignTable) throws SQLException
+	{
 		logger.debug("Function call getCrossReference(String,String,String,String,String,String)");
 		String[] Col = new String[14];
 		Col[0] = "PKTABLE_CAT";
@@ -561,7 +679,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getDatabaseMajorVersion() throws SQLException {
+	public int getDatabaseMajorVersion() throws SQLException
+	{
 		return 2;
 	}
 
@@ -572,7 +691,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getDatabaseMinorVersion() throws SQLException {
+	public int getDatabaseMinorVersion() throws SQLException
+	{
 		return 1;
 	}
 
@@ -583,7 +703,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getDatabaseProductName() throws SQLException {
+	public String getDatabaseProductName() throws SQLException
+	{
 		return "Google Big Query";
 	}
 
@@ -594,7 +715,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getDatabaseProductVersion() throws SQLException {
+	public String getDatabaseProductVersion() throws SQLException
+	{
 		return "google bigquery v2-1.3.3-beta";
 	}
 
@@ -603,23 +725,30 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * <h1>Implementation Details:</h1><br>
 	 * Commit is not supported, so we return with no transaction
 	 * </p>
-	 *
+	 * <p/>
 	 * return TRANSACTION_NONE
 	 */
 	@Override
-	public int getDefaultTransactionIsolation() throws SQLException {
+	public int getDefaultTransactionIsolation() throws SQLException
+	{
 		return java.sql.Connection.TRANSACTION_NONE;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public int getDriverMajorVersion() {
+	public int getDriverMajorVersion()
+	{
 		return MongoDriver.getMajorVersionAsStatic();
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public int getDriverMinorVersion() {
+	public int getDriverMinorVersion()
+	{
 		return MongoDriver.getMinorVersionAsStatic();
 	}
 
@@ -630,13 +759,17 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getDriverName() throws SQLException {
+	public String getDriverName() throws SQLException
+	{
 		return "Starschema.net:BigQuery JDBC driver";
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public String getDriverVersion() throws SQLException {
+	public String getDriverVersion() throws SQLException
+	{
 		return MongoDriver.getMajorVersionAsStatic() + "."
 				  + MongoDriver.getMinorVersionAsStatic();
 	}
@@ -651,7 +784,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getExportedKeys(String catalog, String schema, String table)
-			  throws SQLException {
+			  throws SQLException
+	{
 		logger.debug("Function call getExportedKeys(String,String,String)");
 		String[] Col = new String[14];
 		Col[0] = "PKTABLE_CAT";
@@ -698,7 +832,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getExtraNameCharacters() throws SQLException {
+	public String getExtraNameCharacters() throws SQLException
+	{
 		return "( ) : . , \\ \" / ' ' * < = > + - % & | ^ << >> ~ != <> >= <= ";
 	}
 
@@ -713,7 +848,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public ResultSet getFunctionColumns(String catalog, String schemaPattern,
 													String functionNamePattern, String columnNamePattern)
-			  throws SQLException {
+			  throws SQLException
+	{
 		logger.debug("Function call getFunctionColumns(String,String,String,String)");
 		throw new SQLException("Not implemented."
 				  + "getFunctionColumns(String,String,String,String)");
@@ -729,7 +865,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getFunctions(String catalog, String schemaPattern,
-											String functionNamePattern) throws SQLException {
+											String functionNamePattern) throws SQLException
+	{
 		logger.debug("Function call getFunctions(String,String,String)");
 		throw new SQLException("Not implemented."
 				  + "getFunctions(String,String,String)");
@@ -742,7 +879,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getIdentifierQuoteString() throws SQLException {
+	public String getIdentifierQuoteString() throws SQLException
+	{
 		return "\\\"";
 	}
 
@@ -756,7 +894,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getImportedKeys(String catalog, String schema, String table)
-			  throws SQLException {
+			  throws SQLException
+	{
 		logger.debug("Function call getImportedKeys(String,String,String)");
 		String[] Col = new String[14];
 		Col[0] = "PKTABLE_CAT";
@@ -806,7 +945,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getIndexInfo(String catalog, String schema, String table,
-											boolean unique, boolean approximate) throws SQLException {
+											boolean unique, boolean approximate) throws SQLException
+	{
 		logger.debug("Function call getIndexInfo(String,String,String,boolean,boolean) returning an empty resultset");
 		String[] Col = new String[13];
 		Col[0] = "TABLE_CAT";
@@ -849,15 +989,21 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 		// TODO implement it more
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public int getJDBCMajorVersion() throws SQLException {
+	public int getJDBCMajorVersion() throws SQLException
+	{
 		return MongoDriver.getMajorVersionAsStatic();
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public int getJDBCMinorVersion() throws SQLException {
+	public int getJDBCMinorVersion() throws SQLException
+	{
 		return MongoDriver.getMinorVersionAsStatic();
 	}
 
@@ -868,7 +1014,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxBinaryLiteralLength() throws SQLException {
+	public int getMaxBinaryLiteralLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -879,7 +1026,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxCatalogNameLength() throws SQLException {
+	public int getMaxCatalogNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -890,7 +1038,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxCharLiteralLength() throws SQLException {
+	public int getMaxCharLiteralLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -901,7 +1050,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxColumnNameLength() throws SQLException {
+	public int getMaxColumnNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -912,7 +1062,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxColumnsInGroupBy() throws SQLException {
+	public int getMaxColumnsInGroupBy() throws SQLException
+	{
 		return 0;
 	}
 
@@ -923,7 +1074,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxColumnsInIndex() throws SQLException {
+	public int getMaxColumnsInIndex() throws SQLException
+	{
 		return 0;
 	}
 
@@ -934,7 +1086,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxColumnsInOrderBy() throws SQLException {
+	public int getMaxColumnsInOrderBy() throws SQLException
+	{
 		return 0;
 	}
 
@@ -945,7 +1098,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxColumnsInSelect() throws SQLException {
+	public int getMaxColumnsInSelect() throws SQLException
+	{
 		return 0;
 	}
 
@@ -956,7 +1110,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxColumnsInTable() throws SQLException {
+	public int getMaxColumnsInTable() throws SQLException
+	{
 		return 0;
 	}
 
@@ -969,7 +1124,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxConnections() throws SQLException {
+	public int getMaxConnections() throws SQLException
+	{
 		return 0;
 	}
 
@@ -982,7 +1138,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxCursorNameLength() throws SQLException {
+	public int getMaxCursorNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -995,7 +1152,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxIndexLength() throws SQLException {
+	public int getMaxIndexLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1008,7 +1166,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxProcedureNameLength() throws SQLException {
+	public int getMaxProcedureNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1019,7 +1178,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getMaxRowSize() throws SQLException {
+	public int getMaxRowSize() throws SQLException
+	{
 		return 64 * 1024;
 	}
 
@@ -1032,7 +1192,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxSchemaNameLength() throws SQLException {
+	public int getMaxSchemaNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1045,7 +1206,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxStatementLength() throws SQLException {
+	public int getMaxStatementLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1058,7 +1220,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxStatements() throws SQLException {
+	public int getMaxStatements() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1071,7 +1234,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxTableNameLength() throws SQLException {
+	public int getMaxTableNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1084,7 +1248,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0;
 	 */
 	@Override
-	public int getMaxTablesInSelect() throws SQLException {
+	public int getMaxTablesInSelect() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1097,7 +1262,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return 0
 	 */
 	@Override
-	public int getMaxUserNameLength() throws SQLException {
+	public int getMaxUserNameLength() throws SQLException
+	{
 		return 0;
 	}
 
@@ -1135,7 +1301,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getNumericFunctions() throws SQLException {
+	public String getNumericFunctions() throws SQLException
+	{
 		return "{ fn  ABS() }," + "{ fn  ACOS() }," + "{ fn  ACOSH() },"
 				  + "{ fn  ASIN() }," + "{ fn  ASINH() }," + "{ fn  ATAN() },"
 				  + "{ fn  ATANH() }," + "{ fn  ATAN2() }," + "{ fn  CEIL() },"
@@ -1157,7 +1324,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getPrimaryKeys(String catalog, String schema, String table)
-			  throws SQLException {
+			  throws SQLException
+	{
 		logger.debug("Function call getPrimaryKeys(String,String,String)");
 		String[] Col = new String[6];
 		Col[0] = "TABLE_CAT";
@@ -1189,7 +1357,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public ResultSet getProcedureColumns(String catalog, String schemaPattern,
 													 String procedureNamePattern, String columnNamePattern)
-			  throws SQLException {
+			  throws SQLException
+	{
 		logger.debug("Function call getProcedureColumns(String,String,String,String)");
 		String[] Col = new String[20];
 		Col[0] = "PROCEDURE_CAT";
@@ -1263,7 +1432,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getProcedures(String catalog, String schemaPattern,
-											 String procedureNamePattern) throws SQLException {
+											 String procedureNamePattern) throws SQLException
+	{
 		logger.debug("Function call getProcedures(String,String,String)");
 		String[] Col = new String[9];
 		Col[0] = "PROCEDURE_CAT";
@@ -1295,7 +1465,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return ""
 	 */
 	@Override
-	public String getProcedureTerm() throws SQLException {
+	public String getProcedureTerm() throws SQLException
+	{
 		return "";
 	}
 
@@ -1306,7 +1477,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getResultSetHoldability() throws SQLException {
+	public int getResultSetHoldability() throws SQLException
+	{
 		return ResultSet.CLOSE_CURSORS_AT_COMMIT;
 	}
 
@@ -1317,15 +1489,19 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public RowIdLifetime getRowIdLifetime() throws SQLException {
+	public RowIdLifetime getRowIdLifetime() throws SQLException
+	{
 		return RowIdLifetime.ROWID_UNSUPPORTED;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public ResultSet getSchemas() throws SQLException {
-		return new DMDResultSet(new String[][] { { null, null } },
-				  new String[] { "TABLE_SCHEM", "TABLE_CATALOG" },
+	public ResultSet getSchemas() throws SQLException
+	{
+		return new DMDResultSet(new String[][]{{null, null}},
+				  new String[]{"TABLE_SCHEM", "TABLE_CATALOG"},
 				  DMDResultSet.DMDResultSetType.getSchemas);
 	}
 
@@ -1334,18 +1510,17 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * <h1>Implementation Details:</h1><br>
 	 * Similar to getSchemas, but we can filter the results with the catalog and
 	 * schema
-	 *
+	 * <p/>
 	 * </p>
 	 *
-	 * @param catalog
-	 *            - the catalog, AKA the project ID
-	 * @param schemaPattern
-	 *            - the schema name, AKA the dataset name
+	 * @param catalog       - the catalog, AKA the project ID
+	 * @param schemaPattern - the schema name, AKA the dataset name
 	 * @return the schemas
 	 */
 	@Override
 	public ResultSet getSchemas(String catalog, String schemaPattern)
-			  throws SQLException {
+			  throws SQLException
+	{
 		return this.getSchemas();
 	}
 
@@ -1356,7 +1531,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getSchemaTerm() throws SQLException {
+	public String getSchemaTerm() throws SQLException
+	{
 		return "schema";
 	}
 
@@ -1367,7 +1543,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getSearchStringEscape() throws SQLException {
+	public String getSearchStringEscape() throws SQLException
+	{
 		return "";
 	}
 
@@ -1377,7 +1554,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getSQLKeywords() throws SQLException {
+	public String getSQLKeywords() throws SQLException
+	{
 		return "PI,POW,RADIANS,ROUND,SIN,SINH,SQRT,TAN,TANH,BOOLEAN,"
 				  + "HEX_STRING,STRING,IFNULL,IS_INF,IS_NAN,IS_EXPLICITLY_DEFINED,"
 				  + "FORMAT_IP,PARSE_IP,FORMAT_PACKED_IP,PARSE_PACKED_IP,"
@@ -1395,7 +1573,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public int getSQLStateType() throws SQLException {
+	public int getSQLStateType() throws SQLException
+	{
 		return DatabaseMetaData.sqlStateSQL;
 	}
 
@@ -1415,7 +1594,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getStringFunctions() throws SQLException {
+	public String getStringFunctions() throws SQLException
+	{
 		return "{ fn CONCAT() }," + "{ fn LEFT() }," + "{ fn LENGTH() },"
 				  + "{ fn LOWER() }," + "{ fn LPAD() }," + "{ fn RIGHT() },"
 				  + "{ fn RPAD() }," + "{ fn SUBSTR() }," + "{ fn UPPER( },";
@@ -1432,7 +1612,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getSuperTables(String catalog, String schemaPattern,
-											  String tableNamePattern) throws SQLException {
+											  String tableNamePattern) throws SQLException
+	{
 		String[] Col = new String[4];
 		Col[0] = "TABLE_CAT";
 		// String => the type's catalog (may be null)
@@ -1456,7 +1637,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getSuperTypes(String catalog, String schemaPattern,
-											 String typeNamePattern) throws SQLException {
+											 String typeNamePattern) throws SQLException
+	{
 		String[] Col = new String[6];
 		Col[0] = "TYPE_CAT";
 		// String => the UDT's catalog (may be null)
@@ -1481,7 +1663,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getSystemFunctions() throws SQLException {
+	public String getSystemFunctions() throws SQLException
+	{
 		return "";
 	}
 
@@ -1490,11 +1673,11 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * <h1>Implementation Details:</h1><br>
 	 * Returns an empty resultset
 	 * </p>
-	 *
 	 */
 	@Override
 	public ResultSet getTablePrivileges(String catalog, String schemaPattern,
-													String tableNamePattern) throws SQLException {
+													String tableNamePattern) throws SQLException
+	{
 		logger.debug("Function call getTablePrivileges(String,String,String)");
 		String[] Col = new String[8];
 		Col[0] = "TABLE_CAT"; // String => table catalog (may be null)
@@ -1513,51 +1696,62 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 		// TODO we might need this more implemented.
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ResultSet getTables(String catalog, String schemaPattern,
-										String tableNamePattern, String[] types) throws SQLException {
-		if(catalog!= null && (catalog == " " || catalog.length() == 0)){
+										String tableNamePattern, String[] types) throws SQLException
+	{
+		if (catalog != null && (catalog == " " || catalog.length() == 0))
+		{
 			logger.debug("Catalog length was: " +
 					  catalog.length() + " it's an empty string replacing it with 'null' ");
 			catalog = null;
 		}
-		if(schemaPattern != null) {
-			if(schemaPattern == " " || schemaPattern.length() == 0){
+		if (schemaPattern != null)
+		{
+			if (schemaPattern == " " || schemaPattern.length() == 0)
+			{
 				logger.debug("schemaPattern length was: " +
 						  schemaPattern.length() + " it's an empty string replacing it with 'null' ");
 				schemaPattern = null;
 			}
 		}
 		String typesToLog = "";
-		if(types != null){
-			for (String string : types) {
+		if (types != null)
+		{
+			for (String string : types)
+			{
 				typesToLog += string + " , ";
 			}
 		}
-		MongoDatabase db = ((MongoConnection)this.getConnection()).getNativeDatabase();
-		ListCollectionsIterable<Document> collections=  db.listCollections();
+		MongoDatabase db = ((MongoConnection) this.getConnection()).getNativeDatabase();
+		ListCollectionsIterable<Document> collections = db.listCollections();
 		ArrayList<Document> tables = new ArrayList<>();
 		for (Document collection : collections)
 			tables.add(collection);
 
-		if (tables.size() != 0) {
+		if (tables.size() != 0)
+		{
 			String[][] data = new String[tables.size()][10];
-			for (int i = 0; i < tables.size(); i++) {
+			for (int i = 0; i < tables.size(); i++)
+			{
 				String tableName = tables.get(i).getString("name");
 				data[i][0] = ((MongoConnection) this.getConnection()).getDatabase();
 				data[i][1] = null;
 				data[i][2] = tableName;
 				data[i][3] = "TABLE";
 			}
-			return new DMDResultSet(data, new String[] { "TABLE_CAT",
+			return new DMDResultSet(data, new String[]{"TABLE_CAT",
 					  "TABLE_SCHEM", "TABLE_NAME", "TABLE_TYPE"},
 					  DMDResultSet.DMDResultSetType.getTables);
 		}
-		else {
-			return new DMDResultSet(new String[][] {
-					  { null, null, null, null,null,null,null,null,null,null} },
-					  new String[] { "TABLE_CAT", "TABLE_SCHEM", "TABLE_NAME",
+		else
+		{
+			return new DMDResultSet(new String[][]{
+					  {null, null, null, null, null, null, null, null, null, null}},
+					  new String[]{"TABLE_CAT", "TABLE_SCHEM", "TABLE_NAME",
 								 "TABLE_TYPE"}, DMDResultSet.DMDResultSetType.getTables);
 		}
 	}
@@ -1569,11 +1763,12 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public ResultSet getTableTypes() throws SQLException {
+	public ResultSet getTableTypes() throws SQLException
+	{
 		logger.debug("Function call getTableTypes()");
 		List<String> Res = new ArrayList<String>();
 		Res.add("TABLE");
-		return new DMDResultSet(Res.toArray(), new String[] { "TABLE_TYPE" },
+		return new DMDResultSet(Res.toArray(), new String[]{"TABLE_TYPE"},
 				  DMDResultSet.DMDResultSetType.getTableTypes);
 	}
 
@@ -1593,7 +1788,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getTimeDateFunctions() throws SQLException {
+	public String getTimeDateFunctions() throws SQLException
+	{
 		return "{ fn FORMAT_UTC_USEC() }," + "{ fn NOW() },"
 				  + "{ fn PARSE_UTC_USEC() }," + "{ fn STRFTIME_UTC_USEC() },"
 				  + "{ fn UTC_USEC_TO_DAY() }," + "{ fn UTC_USEC_TO_HOUR() },"
@@ -1610,7 +1806,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return an empty ResultSet
 	 */
 	@Override
-	public ResultSet getTypeInfo() throws SQLException {
+	public ResultSet getTypeInfo() throws SQLException
+	{
 		logger.debug("Function call getTypeInfo()");
 		String[] Col = new String[18];
 		Col[0] = "TYPE_NAME"; // String => Type name
@@ -1652,7 +1849,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public ResultSet getUDTs(String catalog, String schemaPattern,
-									 String typeNamePattern, int[] types) throws SQLException {
+									 String typeNamePattern, int[] types) throws SQLException
+	{
 		logger.debug("Function call getUDTs(String,String,String,int[])");
 		logger.debug("not implemented, returning an empty resultset");
 		String[] Col = new String[7];
@@ -1681,7 +1879,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getURL() throws SQLException {
+	public String getURL() throws SQLException
+	{
 		return "https://developers.google.com/bigquery/";
 	}
 
@@ -1692,7 +1891,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public String getUserName() throws SQLException {
+	public String getUserName() throws SQLException
+	{
 		throw new UnsupportedOperationException();
 	}
 
@@ -1701,11 +1901,11 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * <h1>Implementation Details:</h1><br>
 	 * returns an empty resultset
 	 * </p>
-	 *
 	 */
 	@Override
 	public ResultSet getVersionColumns(String catalog, String schema,
-												  String table) throws SQLException {
+												  String table) throws SQLException
+	{
 		logger.debug("Function call getVersionColumns(String,String,String)");
 		logger.debug("not implemented, returning an empty resultset");
 		String[] Col = new String[8];
@@ -1738,21 +1938,23 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean insertsAreDetected(int type) throws SQLException {
+	public boolean insertsAreDetected(int type) throws SQLException
+	{
 		return false;
 	}
 
 	/**
 	 * <p>
-	 * Retrieves whether a catalog appears at the start of a fully qualified table name. If not, the catalog appears at the end. 
+	 * Retrieves whether a catalog appears at the start of a fully qualified table name. If not, the catalog appears at the end.
 	 * <h1>Implementation Details:</h1><br>
-	 *
+	 * <p/>
 	 * </p>
 	 *
 	 * @return false
 	 */
 	@Override
-	public boolean isCatalogAtStart() throws SQLException {
+	public boolean isCatalogAtStart() throws SQLException
+	{
 		logger.debug("Function call isCatalogAtStart(), return is true ");
 		return true;
 	}
@@ -1764,7 +1966,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean isReadOnly() throws SQLException {
+	public boolean isReadOnly() throws SQLException
+	{
 		return true;
 	}
 
@@ -1777,7 +1980,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+	public boolean isWrapperFor(Class<?> iface) throws SQLException
+	{
 		return false;
 	}
 
@@ -1788,7 +1992,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean locatorsUpdateCopy() throws SQLException {
+	public boolean locatorsUpdateCopy() throws SQLException
+	{
 		return true;
 	}
 
@@ -1799,7 +2004,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean nullPlusNonNullIsNull() throws SQLException {
+	public boolean nullPlusNonNullIsNull() throws SQLException
+	{
 		return true; // TODO test it!
 	}
 
@@ -1810,7 +2016,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean nullsAreSortedAtEnd() throws SQLException {
+	public boolean nullsAreSortedAtEnd() throws SQLException
+	{
 		return false;
 	}
 
@@ -1821,7 +2028,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean nullsAreSortedAtStart() throws SQLException {
+	public boolean nullsAreSortedAtStart() throws SQLException
+	{
 		return false;
 	}
 
@@ -1832,7 +2040,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean nullsAreSortedHigh() throws SQLException {
+	public boolean nullsAreSortedHigh() throws SQLException
+	{
 		return false;
 	}
 
@@ -1843,7 +2052,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean nullsAreSortedLow() throws SQLException {
+	public boolean nullsAreSortedLow() throws SQLException
+	{
 		return false;
 	}
 
@@ -1854,7 +2064,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean othersDeletesAreVisible(int type) throws SQLException {
+	public boolean othersDeletesAreVisible(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -1865,7 +2076,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean othersInsertsAreVisible(int type) throws SQLException {
+	public boolean othersInsertsAreVisible(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -1876,7 +2088,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean othersUpdatesAreVisible(int type) throws SQLException {
+	public boolean othersUpdatesAreVisible(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -1887,7 +2100,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean ownDeletesAreVisible(int type) throws SQLException {
+	public boolean ownDeletesAreVisible(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -1898,7 +2112,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean ownInsertsAreVisible(int type) throws SQLException {
+	public boolean ownInsertsAreVisible(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -1909,7 +2124,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean ownUpdatesAreVisible(int type) throws SQLException {
+	public boolean ownUpdatesAreVisible(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -1920,7 +2136,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean storesLowerCaseIdentifiers() throws SQLException {
+	public boolean storesLowerCaseIdentifiers() throws SQLException
+	{
 		return true;
 	}
 
@@ -1931,7 +2148,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean storesLowerCaseQuotedIdentifiers() throws SQLException {
+	public boolean storesLowerCaseQuotedIdentifiers() throws SQLException
+	{
 		return true;
 	}
 
@@ -1942,7 +2160,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean storesMixedCaseIdentifiers() throws SQLException {
+	public boolean storesMixedCaseIdentifiers() throws SQLException
+	{
 		return false;
 	}
 
@@ -1953,7 +2172,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean storesMixedCaseQuotedIdentifiers() throws SQLException {
+	public boolean storesMixedCaseQuotedIdentifiers() throws SQLException
+	{
 		return false;
 	}
 
@@ -1964,7 +2184,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean storesUpperCaseIdentifiers() throws SQLException {
+	public boolean storesUpperCaseIdentifiers() throws SQLException
+	{
 		return false;
 	}
 
@@ -1975,7 +2196,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean storesUpperCaseQuotedIdentifiers() throws SQLException {
+	public boolean storesUpperCaseQuotedIdentifiers() throws SQLException
+	{
 		return false;
 	}
 
@@ -1986,7 +2208,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsAlterTableWithAddColumn() throws SQLException {
+	public boolean supportsAlterTableWithAddColumn() throws SQLException
+	{
 		return false;
 	}
 
@@ -1997,7 +2220,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsAlterTableWithDropColumn() throws SQLException {
+	public boolean supportsAlterTableWithDropColumn() throws SQLException
+	{
 		return false;
 	}
 
@@ -2010,7 +2234,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean supportsANSI92EntryLevelSQL() throws SQLException {
+	public boolean supportsANSI92EntryLevelSQL() throws SQLException
+	{
 		return false;
 	}
 
@@ -2023,7 +2248,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean supportsANSI92FullSQL() throws SQLException {
+	public boolean supportsANSI92FullSQL() throws SQLException
+	{
 		return false;
 	}
 
@@ -2036,7 +2262,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return false
 	 */
 	@Override
-	public boolean supportsANSI92IntermediateSQL() throws SQLException {
+	public boolean supportsANSI92IntermediateSQL() throws SQLException
+	{
 		return false;
 	}
 
@@ -2047,7 +2274,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsBatchUpdates() throws SQLException {
+	public boolean supportsBatchUpdates() throws SQLException
+	{
 		return false;
 	}
 
@@ -2058,7 +2286,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsCatalogsInDataManipulation() throws SQLException {
+	public boolean supportsCatalogsInDataManipulation() throws SQLException
+	{
 		return false;
 	}
 
@@ -2069,7 +2298,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsCatalogsInIndexDefinitions() throws SQLException {
+	public boolean supportsCatalogsInIndexDefinitions() throws SQLException
+	{
 		return false;
 	}
 
@@ -2080,19 +2310,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException {
-		return false;
-
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsCatalogsInProcedureCalls() throws SQLException {
+	public boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException
+	{
 		return false;
 
 	}
@@ -2104,7 +2323,21 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsCatalogsInTableDefinitions() throws SQLException {
+	public boolean supportsCatalogsInProcedureCalls() throws SQLException
+	{
+		return false;
+
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsCatalogsInTableDefinitions() throws SQLException
+	{
 		return false;
 
 	}
@@ -2116,7 +2349,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsColumnAliasing() throws SQLException {
+	public boolean supportsColumnAliasing() throws SQLException
+	{
 		return true;
 
 	}
@@ -2128,7 +2362,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsConvert() throws SQLException {
+	public boolean supportsConvert() throws SQLException
+	{
 		return false;
 
 	}
@@ -2141,7 +2376,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public boolean supportsConvert(int fromType, int toType)
-			  throws SQLException {
+			  throws SQLException
+	{
 		return false;
 
 	}
@@ -2153,7 +2389,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsCoreSQLGrammar() throws SQLException {
+	public boolean supportsCoreSQLGrammar() throws SQLException
+	{
 		return true;
 	}
 
@@ -2164,7 +2401,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsCorrelatedSubqueries() throws SQLException {
+	public boolean supportsCorrelatedSubqueries() throws SQLException
+	{
 		// http://publib.boulder.ibm.com/infocenter/iseries/v5r3/index.jsp?topic=%2Fsqlp%2Frbafyexsub1.htm
 		return false;
 	}
@@ -2177,7 +2415,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public boolean supportsDataDefinitionAndDataManipulationTransactions()
-			  throws SQLException {
+			  throws SQLException
+	{
 		return false;
 	}
 
@@ -2189,7 +2428,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public boolean supportsDataManipulationTransactionsOnly()
-			  throws SQLException {
+			  throws SQLException
+	{
 		return false;
 	}
 
@@ -2200,7 +2440,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsDifferentTableCorrelationNames() throws SQLException {
+	public boolean supportsDifferentTableCorrelationNames() throws SQLException
+	{
 		return true;
 	}
 
@@ -2211,110 +2452,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsExpressionsInOrderBy() throws SQLException {
-		return true;
-
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsExtendedSQLGrammar() throws SQLException {
-		return false;
-
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsFullOuterJoins() throws SQLException {
-		return false;
-
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsGetGeneratedKeys() throws SQLException {
-		return false;
-
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns true
-	 * </p>
-	 */
-	@Override
-	public boolean supportsGroupBy() throws SQLException {
-		return true;
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsGroupByBeyondSelect() throws SQLException {
-		return false;
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsGroupByUnrelated() throws SQLException {
-		return false;
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsIntegrityEnhancementFacility() throws SQLException {
-		return false;
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns false
-	 * </p>
-	 */
-	@Override
-	public boolean supportsLikeEscapeClause() throws SQLException {
-		return false;
-	}
-
-	/**
-	 * <p>
-	 * <h1>Implementation Details:</h1><br>
-	 * Returns true
-	 * </p>
-	 */
-	@Override
-	public boolean supportsLimitedOuterJoins() throws SQLException {
+	public boolean supportsExpressionsInOrderBy() throws SQLException
+	{
 		return true;
 
 	}
@@ -2326,7 +2465,59 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsMinimumSQLGrammar() throws SQLException {
+	public boolean supportsExtendedSQLGrammar() throws SQLException
+	{
+		return false;
+
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsFullOuterJoins() throws SQLException
+	{
+		return false;
+
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsGetGeneratedKeys() throws SQLException
+	{
+		return false;
+
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns true
+	 * </p>
+	 */
+	@Override
+	public boolean supportsGroupBy() throws SQLException
+	{
+		return true;
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsGroupByBeyondSelect() throws SQLException
+	{
 		return false;
 	}
 
@@ -2337,7 +2528,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsMixedCaseIdentifiers() throws SQLException {
+	public boolean supportsGroupByUnrelated() throws SQLException
+	{
 		return false;
 	}
 
@@ -2348,7 +2540,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException {
+	public boolean supportsIntegrityEnhancementFacility() throws SQLException
+	{
 		return false;
 	}
 
@@ -2359,7 +2552,69 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsMultipleOpenResults() throws SQLException {
+	public boolean supportsLikeEscapeClause() throws SQLException
+	{
+		return false;
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns true
+	 * </p>
+	 */
+	@Override
+	public boolean supportsLimitedOuterJoins() throws SQLException
+	{
+		return true;
+
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsMinimumSQLGrammar() throws SQLException
+	{
+		return false;
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsMixedCaseIdentifiers() throws SQLException
+	{
+		return false;
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException
+	{
+		return false;
+	}
+
+	/**
+	 * <p>
+	 * <h1>Implementation Details:</h1><br>
+	 * Returns false
+	 * </p>
+	 */
+	@Override
+	public boolean supportsMultipleOpenResults() throws SQLException
+	{
 		return multipleOpenResultsSupported; // In the current version.
 	}
 
@@ -2370,7 +2625,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsMultipleResultSets() throws SQLException {
+	public boolean supportsMultipleResultSets() throws SQLException
+	{
 		return false;
 
 	}
@@ -2382,7 +2638,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsMultipleTransactions() throws SQLException {
+	public boolean supportsMultipleTransactions() throws SQLException
+	{
 		return true;
 	}
 
@@ -2393,7 +2650,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsNamedParameters() throws SQLException {
+	public boolean supportsNamedParameters() throws SQLException
+	{
 		return false; // Bigquery doesn't support stored jobs.
 	}
 
@@ -2404,7 +2662,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsNonNullableColumns() throws SQLException {
+	public boolean supportsNonNullableColumns() throws SQLException
+	{
 		return false;
 	}
 
@@ -2415,7 +2674,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsOpenCursorsAcrossCommit() throws SQLException {
+	public boolean supportsOpenCursorsAcrossCommit() throws SQLException
+	{
 		return false;
 	}
 
@@ -2426,7 +2686,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsOpenCursorsAcrossRollback() throws SQLException {
+	public boolean supportsOpenCursorsAcrossRollback() throws SQLException
+	{
 		return false;
 	}
 
@@ -2437,7 +2698,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsOpenStatementsAcrossCommit() throws SQLException {
+	public boolean supportsOpenStatementsAcrossCommit() throws SQLException
+	{
 		return false;
 	}
 
@@ -2448,7 +2710,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsOpenStatementsAcrossRollback() throws SQLException {
+	public boolean supportsOpenStatementsAcrossRollback() throws SQLException
+	{
 		return false;
 	}
 
@@ -2459,7 +2722,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsOrderByUnrelated() throws SQLException {
+	public boolean supportsOrderByUnrelated() throws SQLException
+	{
 		return false; // Tested
 	}
 
@@ -2470,7 +2734,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsOuterJoins() throws SQLException {
+	public boolean supportsOuterJoins() throws SQLException
+	{
 		return true;
 	}
 
@@ -2481,7 +2746,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsPositionedDelete() throws SQLException {
+	public boolean supportsPositionedDelete() throws SQLException
+	{
 		return false;
 	}
 
@@ -2492,7 +2758,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsPositionedUpdate() throws SQLException {
+	public boolean supportsPositionedUpdate() throws SQLException
+	{
 		return false;
 	}
 
@@ -2504,30 +2771,40 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public boolean supportsResultSetConcurrency(int type, int concurrency)
-			  throws SQLException {
-		if(ResultSet.TYPE_FORWARD_ONLY == type) {
-			if(ResultSet.CONCUR_READ_ONLY == concurrency) {
+			  throws SQLException
+	{
+		if (ResultSet.TYPE_FORWARD_ONLY == type)
+		{
+			if (ResultSet.CONCUR_READ_ONLY == concurrency)
+			{
 				return true;
 			}
-			if(ResultSet.CONCUR_UPDATABLE == concurrency) {
+			if (ResultSet.CONCUR_UPDATABLE == concurrency)
+			{
 				return false;
 			}
 		}
 
-		if(ResultSet.TYPE_SCROLL_INSENSITIVE == type) {
-			if(ResultSet.CONCUR_READ_ONLY == concurrency) {
+		if (ResultSet.TYPE_SCROLL_INSENSITIVE == type)
+		{
+			if (ResultSet.CONCUR_READ_ONLY == concurrency)
+			{
 				return true;
 			}
-			if(ResultSet.CONCUR_UPDATABLE == concurrency) {
+			if (ResultSet.CONCUR_UPDATABLE == concurrency)
+			{
 				return false;
 			}
 		}
 
-		if(ResultSet.TYPE_SCROLL_SENSITIVE == type) {
-			if(ResultSet.CONCUR_READ_ONLY == concurrency) {
+		if (ResultSet.TYPE_SCROLL_SENSITIVE == type)
+		{
+			if (ResultSet.CONCUR_READ_ONLY == concurrency)
+			{
 				return true;
 			}
-			if(ResultSet.CONCUR_UPDATABLE == concurrency) {
+			if (ResultSet.CONCUR_UPDATABLE == concurrency)
+			{
 				return false;
 			}
 		}
@@ -2542,7 +2819,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	@Override
 	public boolean supportsResultSetHoldability(int holdability)
-			  throws SQLException {
+			  throws SQLException
+	{
 		return false; // Only read only functions atm.
 
 	}
@@ -2556,7 +2834,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @return TYPE_SCROLL_INSENSITIVE
 	 */
 	@Override
-	public boolean supportsResultSetType(int type) throws SQLException {
+	public boolean supportsResultSetType(int type) throws SQLException
+	{
 		if (type == java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE) return true;
 		if (type == ResultSet.TYPE_FORWARD_ONLY) return true;
 		return false;
@@ -2569,7 +2848,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSavepoints() throws SQLException {
+	public boolean supportsSavepoints() throws SQLException
+	{
 		return false;
 	}
 
@@ -2580,7 +2860,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSchemasInDataManipulation() throws SQLException {
+	public boolean supportsSchemasInDataManipulation() throws SQLException
+	{
 		return false;
 	}
 
@@ -2591,7 +2872,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSchemasInIndexDefinitions() throws SQLException {
+	public boolean supportsSchemasInIndexDefinitions() throws SQLException
+	{
 		return false;
 	}
 
@@ -2602,7 +2884,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSchemasInPrivilegeDefinitions() throws SQLException {
+	public boolean supportsSchemasInPrivilegeDefinitions() throws SQLException
+	{
 		return false;
 	}
 
@@ -2613,7 +2896,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSchemasInProcedureCalls() throws SQLException {
+	public boolean supportsSchemasInProcedureCalls() throws SQLException
+	{
 		return false;
 	}
 
@@ -2624,7 +2908,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSchemasInTableDefinitions() throws SQLException {
+	public boolean supportsSchemasInTableDefinitions() throws SQLException
+	{
 		return false;
 	}
 
@@ -2635,7 +2920,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSelectForUpdate() throws SQLException {
+	public boolean supportsSelectForUpdate() throws SQLException
+	{
 		return false;
 	}
 
@@ -2646,7 +2932,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsStatementPooling() throws SQLException {
+	public boolean supportsStatementPooling() throws SQLException
+	{
 		return false;
 	}
 
@@ -2657,7 +2944,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
+	public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException
+	{
 		return false;
 	}
 
@@ -2668,7 +2956,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsStoredProcedures() throws SQLException {
+	public boolean supportsStoredProcedures() throws SQLException
+	{
 		return false;
 	}
 
@@ -2679,7 +2968,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSubqueriesInComparisons() throws SQLException {
+	public boolean supportsSubqueriesInComparisons() throws SQLException
+	{
 		return true;
 	}
 
@@ -2690,7 +2980,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSubqueriesInExists() throws SQLException {
+	public boolean supportsSubqueriesInExists() throws SQLException
+	{
 		return false;
 
 	}
@@ -2708,7 +2999,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSubqueriesInIns() throws SQLException {
+	public boolean supportsSubqueriesInIns() throws SQLException
+	{
 		return false;
 	}
 
@@ -2719,7 +3011,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsSubqueriesInQuantifieds() throws SQLException {
+	public boolean supportsSubqueriesInQuantifieds() throws SQLException
+	{
 		return false;
 	}
 
@@ -2730,18 +3023,24 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsTableCorrelationNames() throws SQLException {
+	public boolean supportsTableCorrelationNames() throws SQLException
+	{
 		return false;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean supportsTransactionIsolationLevel(int level)
-			  throws SQLException {
-		if (java.sql.Connection.TRANSACTION_NONE == level) {
+			  throws SQLException
+	{
+		if (java.sql.Connection.TRANSACTION_NONE == level)
+		{
 			return true;
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
@@ -2753,7 +3052,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsTransactions() throws SQLException {
+	public boolean supportsTransactions() throws SQLException
+	{
 		return false;
 	}
 
@@ -2764,7 +3064,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsUnion() throws SQLException {
+	public boolean supportsUnion() throws SQLException
+	{
 		return true;
 	}
 
@@ -2775,7 +3076,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean supportsUnionAll() throws SQLException {
+	public boolean supportsUnionAll() throws SQLException
+	{
 		return false;
 	}
 
@@ -2788,7 +3090,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * @throws SQLException
 	 */
 	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException {
+	public <T> T unwrap(Class<T> iface) throws SQLException
+	{
 		throw new SQLException("no object found that implements "
 				  + iface.toString());
 	}
@@ -2800,7 +3103,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean updatesAreDetected(int type) throws SQLException {
+	public boolean updatesAreDetected(int type) throws SQLException
+	{
 		return false;
 	}
 
@@ -2811,7 +3115,8 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean usesLocalFilePerTable() throws SQLException {
+	public boolean usesLocalFilePerTable() throws SQLException
+	{
 		return false;
 	}
 
@@ -2822,21 +3127,28 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * </p>
 	 */
 	@Override
-	public boolean usesLocalFiles() throws SQLException {
+	public boolean usesLocalFiles() throws SQLException
+	{
 		return false;
 	}
 
 	//------------------------- for Jdk1.7 -----------------------------------
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean generatedKeyAlwaysReturned() throws SQLException {
+	public boolean generatedKeyAlwaysReturned() throws SQLException
+	{
 		return false;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException {
+	public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException
+	{
 		return null;
 	}
 

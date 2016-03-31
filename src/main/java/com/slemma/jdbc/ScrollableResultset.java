@@ -1037,7 +1037,6 @@ abstract class ScrollableResultset<T> implements java.sql.ResultSet {
 	public String getString(String columnLabel) throws SQLException {
 		int columnIndex = this.findColumn(columnLabel);
 		return this.getString(columnIndex);
-
 	}
 
 	/** {@inheritDoc} */
@@ -1510,7 +1509,7 @@ abstract class ScrollableResultset<T> implements java.sql.ResultSet {
 	 * @throws SQLException
 	 *             if Cursor is not in a valid Position
 	 */
-	public void ThrowCursorNotValidExeption() throws SQLException {
+	public void ThrowIfCursorNotValidException() throws SQLException {
 		if (this.RowsofResult == null || this.RowsofResult.length == 0) {
 			throw new SQLException("There are no rows in this Resultset"
 					  + String.valueOf(this.Cursor) + "RowsofResult.length"

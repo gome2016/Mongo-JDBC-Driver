@@ -181,4 +181,18 @@ public class TestResultSet
 		Assert.assertTrue(true);
 	}
 
+	@Test
+	public void nativeProjectionTest() {
+		FindIterable<Document> iterable = ((MongoConnection)con).getNativeDatabase().getCollection("restaurants").find(
+				  Document.parse("{ $and: [{'borough': { $ne: 'Bronx'} }, {'cuisine':'Irish'}]}")
+		);
+
+		iterable.forEach(new Block<Document>() {
+			@Override
+			public void apply(final Document document) {
+				System.out.println(document);
+			}
+		});
+	}
+
 }
