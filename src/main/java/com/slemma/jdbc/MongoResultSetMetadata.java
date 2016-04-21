@@ -30,7 +30,7 @@ class MongoResultsetMetaData implements ResultSetMetaData
 	 * Returns the database name
 	 * </p>
 	 *
-	 * @return projectID
+	 * @return
 	 */
 	@Override
 	public String getCatalogName(int column) throws SQLException

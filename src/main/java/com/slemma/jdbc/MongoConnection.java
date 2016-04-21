@@ -31,17 +31,14 @@ public class MongoConnection implements Connection
 	 */
 	private MongoClient mongoClient = null;
 
+	private String url = null;
+
 	private final String database;
 
 	/**
 	 * List to contain sql warnings in
 	 */
 	private List<SQLWarning> SQLWarningList = new ArrayList<SQLWarning>();
-
-	/**
-	 * String to contain the url except the url prefix
-	 */
-	private String URLPART = null;
 
 	/**
 	 * Extracts the JDBC URL then makes a connection to the MongoDb.
@@ -54,7 +51,7 @@ public class MongoConnection implements Connection
 	{
 		MongoClientURI mongoURI = new MongoClientURI(url);
 		this.mongoClient = new MongoClient(mongoURI);
-
+		this.url = url;
 		this.database = info.getProperty("database");
 	}
 
@@ -257,6 +254,11 @@ public class MongoConnection implements Connection
 				  + "createStruct(string,object[])");
 	}
 
+	public String getUrl()
+	{
+		return url;
+	}
+
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
@@ -369,14 +371,6 @@ public class MongoConnection implements Connection
 	public Map<String, Class<?>> getTypeMap() throws SQLException
 	{
 		throw new MongoSQLException("Not implemented." + "getTypeMap()");
-	}
-
-	/**
-	 * @return The URL which is in the JDBC drivers connection URL
-	 */
-	public String getURLPART()
-	{
-		return this.URLPART;
 	}
 
 	/**

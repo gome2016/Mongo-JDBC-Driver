@@ -64,18 +64,35 @@
     </dependencies>
 
     <build>
-    <plugins>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-            <source>${jdk.version}</source>
-            <target>${jdk.version}</target>
-            <useIncrementalCompilation>false</useIncrementalCompilation>
-        </configuration>
-    </plugin>
-    </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>META-INF/services</targetPath>
+                <includes>
+                    <include>java.sql.Driver</include>
+                </includes>
+            </resource>
+            <!--<resource>-->
+                <!--<directory>${basedir}</directory>-->
+                <!--<targetPath>META-INF/maven/${project.groupId}/${project.artifactId}</targetPath>-->
+                <!--<includes>-->
+                    <!--<include>VERSION</include>-->
+                    <!--<include>LICENSE*</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <scm>
         <connection>scm:git:https://github.com/Slemma/Mongo-JDBC-Driver.git</connection>

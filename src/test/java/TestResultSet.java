@@ -8,10 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * @author Igor Shestakov.
@@ -40,8 +37,7 @@ public class TestResultSet
 					this.logger.error("Error in connection" + e.toString());
 					Assert.fail("Exception:" + e.toString());
 				}
-				this.logger.info(((MongoConnection) this.con)
-						  .getURLPART());
+				this.logger.info(((MongoConnection) this.con).getUrl());
 			}
 		}
 		catch (SQLException e) {
@@ -155,7 +151,30 @@ public class TestResultSet
 
 
 	@Test
-	public void aggregateTest() {
+	public void findTestLimitResultWithArray() {
+		ResultSet rs;
+		String query = "{ \"find\" : \"zips\", \"filter\" : { \"$and\" : [{ \"state\" : { \"$ne\" : \"MA\" } }, { \"cuisine\" : {\"$ne\":\"BARRE\"} }] } , \"limit\" : 10, \"batchSize\" : 150}";
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData mRs = rs.getMetaData();
+			Assert.assertEquals(4,mRs.getColumnCount());
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(10,rowCnt);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+
+	@Test
+	public void aggregateTest1() {
 		ResultSet rs;
 		final String query =
 				  "{" +
@@ -173,6 +192,61 @@ public class TestResultSet
 
 			int rowCnt = Utils.printResultSet(rs);
 			Assert.assertEquals(7,rowCnt);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void aggregateTest2() {
+		ResultSet rs;
+		final String query =
+				  "{" +
+							 "\"aggregate\":\"zips\"" +
+							 ", \"pipeline\":[" +
+							 "{ \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } },\n" +
+							 "{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }" +
+							 "]" +
+							 "}"
+				  ;
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(7,rowCnt);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+
+	@Test
+	public void mixedSqlMqlDistinctCount() {
+		ResultSet rs;
+		final String query =
+				  "select count(DISTINCT factdata_view._id) as c0 from ({\n" +
+							 "\"aggregate\":\"zips\"\n" +
+							 ", \"pipeline\":[\n" +
+							 "  { \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } }\n" +
+							 "  ,{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }\n" +
+							 "  ]\n" +
+							 "}) as factdata_view"
+				  ;
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(1,rowCnt);
 		}
 		catch (SQLException e) {
 			this.logger.error("Exception: " + e.toString());

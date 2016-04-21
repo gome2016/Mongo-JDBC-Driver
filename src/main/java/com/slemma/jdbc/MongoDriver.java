@@ -179,6 +179,10 @@ public class MongoDriver implements java.sql.Driver
 		return MongoDriver.MINOR_VERSION;
 	}
 
+	public static String getName() {
+		return "com.slemma.mongo-jdbc  JDBC driver";
+	}
+
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>

@@ -1,6 +1,7 @@
 package com.slemma.jdbc;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
 import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
@@ -22,7 +23,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * Reference for the Connection object that made this DatabaseMetadata
 	 * object
 	 */
-	MongoConnection Connection;
+	MongoConnection connection;
 
 	/**
 	 * Reference for the Logger Class
@@ -41,7 +42,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 */
 	public MongoDatabaseMetadata(MongoConnection mongoConnection)
 	{
-		this.Connection = mongoConnection;
+		this.connection = mongoConnection;
 	}
 
 	/**
@@ -468,10 +469,10 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 //		((MongoConnection)this.getConnection()).getDatabase();
 //		List<Table> Tables = null;
 //		try {
-//			Tables = BQSupportFuncts.getTables(this.Connection, catalog,
+//			Tables = BQSupportFuncts.getTables(this.connection, catalog,
 //					  schemaPattern, tableNamePattern);
 ////            if(Tables == null){ //Because of Crystal Reports It's not elegant, but hey it works!
-////                Tables = BQSupportFuncts.getTables(this.Connection, schemaPattern,
+////                Tables = BQSupportFuncts.getTables(this.connection, schemaPattern,
 ////                        catalog, tableNamePattern);
 ////            }
 //		}
@@ -617,7 +618,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public java.sql.Connection getConnection() throws SQLException
 	{
-		return this.Connection;
+		return this.connection;
 	}
 
 	/**
@@ -755,13 +756,13 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Returns "Starschema.net:BigQuery JDBC driver"
+	 * Returns "com.slemma.mongo-jdbc JDBC driver"
 	 * </p>
 	 */
 	@Override
 	public String getDriverName() throws SQLException
 	{
-		return "Starschema.net:BigQuery JDBC driver";
+		return MongoDriver.getName();
 	}
 
 	/**
@@ -1881,7 +1882,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public String getURL() throws SQLException
 	{
-		return "https://developers.google.com/bigquery/";
+		return this.connection.getUrl();
 	}
 
 	/**
@@ -1893,7 +1894,19 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public String getUserName() throws SQLException
 	{
-		throw new UnsupportedOperationException();
+		List<MongoCredential> cList = this.connection.getMongoClient().getCredentialsList();
+		if (this.connection.getMongoClient().getCredentialsList().size() == 0)
+			return null;
+		else
+		{
+			String userNameString = "";
+			for (MongoCredential mongoCredential : cList)
+			{
+				userNameString += mongoCredential.getUserName() + ";";
+				userNameString = StringUtils.substring(userNameString, 0, userNameString.length()-1);
+			}
+			return userNameString;
+		}
 	}
 
 	/**

@@ -1,4 +1,5 @@
 import com.slemma.jdbc.MongoConnection;
+import com.slemma.jdbc.MongoDriver;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import java.sql.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Igor Shestakov.
@@ -62,8 +64,7 @@ public class TestMetadata
 					this.logger.error("Error in connection" + e.toString());
 					Assert.fail("General Exception:" + e.toString());
 				}
-				this.logger.info(((MongoConnection) this.con)
-						  .getURLPART());
+				this.logger.info(((MongoConnection) this.con).getUrl());
 			}
 		}
 		catch (SQLException e) {
@@ -72,6 +73,10 @@ public class TestMetadata
 		QueryLoad();
 	}
 
+	@Test
+	public void checkDriverName() {
+		assertEquals(MongoDriver.getName(), "com.slemma.mongo-jdbc  JDBC driver");
+	}
 
 	@Test
 	public void printResultSet() {
@@ -93,6 +98,32 @@ public class TestMetadata
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();
 			assertNotNull(metadata);
+		}
+		catch (SQLException e) {
+			this.logger.error("SQL exception: " + e.toString());
+		}
+	}
+
+	@Test
+	public void metadataGetURL() {
+		try {
+			DatabaseMetaData metadata = this.con.getMetaData();
+			assertNotNull(metadata);
+			String url = metadata.getURL();
+			assertNotNull(url);
+		}
+		catch (SQLException e) {
+			this.logger.error("SQL exception: " + e.toString());
+		}
+	}
+
+	@Test
+	public void metadataGetUserName() {
+		try {
+			DatabaseMetaData metadata = this.con.getMetaData();
+			assertNotNull(metadata);
+			String userName = metadata.getUserName();
+			assertNull(userName);
 		}
 		catch (SQLException e) {
 			this.logger.error("SQL exception: " + e.toString());

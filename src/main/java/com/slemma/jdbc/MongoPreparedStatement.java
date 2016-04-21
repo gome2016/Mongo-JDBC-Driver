@@ -256,7 +256,15 @@ public class MongoPreparedStatement extends AbstractMongoStatement implements Pr
 
 
 		MongoDatabase database = this.connection.getMongoClient().getDatabase(this.connection.getDatabase());
-		Document command = Document.parse(this.RunnableStatement);
+		Document command = null;
+		try
+		{
+			command = Document.parse(this.RunnableStatement);
+		}
+		catch (Exception e)
+		{
+			throw new MongoSQLException("Invalid query. "+e.getMessage());
+		}
 		MongoResult mongoResult =  new MongoResult(database.runCommand(command), database);
 
 		if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
