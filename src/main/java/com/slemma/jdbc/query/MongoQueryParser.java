@@ -1,8 +1,7 @@
 package com.slemma.jdbc.query;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import com.slemma.jdbc.MongoSQLException;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,120 +10,35 @@ import java.util.regex.Pattern;
  */
 public class MongoQueryParser
 {
+	private static final Pattern countMembersPattern = Pattern.compile("^(?i)select\\s+count\\s*\\(\\s*distinct\\s+(.+?)\\.(.+)\\s*\\)\\s+as\\s+(.+)\\s+from\\s+\\((\\{(.|\\n)*\\})\\)\\s+as\\s+.*$");
+	private static final Pattern dimMembersPattern = Pattern.compile("^(?i)select\\s+(.+?)\\.(.+)\\s+as\\s+(.+)\\s*,\\s*(.+?)\\.(.+)\\s+as\\s+(.+)\\s*from\\s\\((\\{(.|\\n)*\\})\\)\\sas.*$");
 
-	private Pattern findPattern = Pattern.compile("\\.find\\(\\{.*?\\}\\)");
-	private Pattern findContentPattern = Pattern.compile("\\.find\\((\\{.*?\\})\\)");
-
-	private Pattern plainFindPattern = Pattern.compile("\\.find\\(\\)");
-
-	private Pattern sortPattern = Pattern.compile("\\.sort\\(\\{.*?\\}\\)");
-	private Pattern sortContentPattern = Pattern.compile("\\.sort\\((\\{.*?\\})\\)");
-
-	private Pattern skipPattern = Pattern.compile("\\.skip\\(.*?\\)");
-	private Pattern skipContentPattern = Pattern.compile("\\.skip\\((.*?)\\)");
-
-	private Pattern limitPattern = Pattern.compile("\\.limit\\(.*?\\)");
-	private Pattern limitContentPattern = Pattern.compile("\\.limit\\((.*?)\\)");
-
-	private Pattern aggregatePattern = Pattern.compile("\\.aggregate\\(\\[?\\{.*?\\}\\]?\\)");
-	private Pattern aggregateContentPattern = Pattern.compile("\\.aggregate\\((\\[?\\{.*?\\}\\]?)\\)");
-
-	private Pattern collectionNamePattern = Pattern.compile("db\\.(.*?)(?:\\.find\\(.*?\\))?(?:\\.aggregate\\(.*?\\))?");
-
-	public MongoQuery parse(String queryString, LinkedHashMap<String,String> queryParameters)
+	public static MongoQuery parse(String query) throws MongoSQLException
 	{
-		PlaceholderLookup placeholderLookup = new PlaceholderLookup(queryParameters);
-		String formattedQueryString = new MongoQueryCleaner().clean(queryString);
+		String cleanedQuery = query.trim();
 
-//		val findQueries: List[Query] = findPattern.findAllIn(formattedQueryString).toList.map(q => {
-//			  val findContentPattern(findQueryString) = q;
-//		FindQuery(findQueryString, placeholderLookup)
-//		})
-		Matcher m = findPattern.matcher(formattedQueryString);
-		List<String> findQueries = new ArrayList<String>();
-		while (m.find()) {
-			findQueries.add(m.group());
+		Matcher m;
+
+		//try match count query
+		m = countMembersPattern.matcher(cleanedQuery);
+		if (m.matches()) {
+			String sourceField = m.group(2);
+			String resultField = m.group(3);
+			String mqlQuery = m.group(4);
+			return new CountMembersMixedQuery(sourceField, resultField, mqlQuery);
 		}
 
-//		val plainFindQueries: List[Query] = plainFindPattern.findAllIn(formattedQueryString).toList.map(q => {
-//			  FindQuery("", placeholderLookup)
-//	})
-
-		m = plainFindPattern.matcher(formattedQueryString);
-		List<String> plainFindQueries = new ArrayList<String>();
-		while (m.find()) {
-			plainFindQueries.add(m.group());
+		//try get dimension members query
+		m = dimMembersPattern.matcher(cleanedQuery);
+		if (m.matches()) {
+			String sourceKeyField = m.group(2);
+			String resultKeyField = m.group(3);
+			String sourceNameField = m.group(5);
+			String resultNameField = m.group(6);
+			String mqlQuery = m.group(7);
+			return new GetMembersMixedQuery(sourceKeyField, resultKeyField,sourceNameField, resultNameField, mqlQuery);
 		}
 
-//		val sortQueries: List[Query] = sortPattern.findAllIn(formattedQueryString).toList.map(q => {
-//			  val sortContentPattern(sortQueryString) = q;
-//		SortQuery(sortQueryString, placeholderLookup)
-//		})
-
-		m = sortPattern.matcher(formattedQueryString);
-		List<String> sortQueries = new ArrayList<String>();
-		while (m.find()) {
-			sortQueries.add(m.group());
-		}
-
-//		val skipQueries: List[Query] = skipPattern.findAllIn(formattedQueryString).toList.map(q => {
-//			  val skipContentPattern(skipQueryString) = q;
-//		SkipQuery(skipQueryString, placeholderLookup)
-//		})
-
-		m = skipPattern.matcher(formattedQueryString);
-		List<String> skipQueries = new ArrayList<String>();
-		while (m.find()) {
-			skipQueries.add(m.group());
-		}
-
-//		val limitQueries: List[Query] = limitPattern.findAllIn(formattedQueryString).toList.map(q => {
-//			  val limitContentPattern(limitQueryString) = q;
-//		LimitQuery(limitQueryString, placeholderLookup)
-//		})
-
-		m = limitPattern.matcher(formattedQueryString);
-		List<String> limitQueries = new ArrayList<String>();
-		while (m.find()) {
-			limitQueries.add(m.group());
-		}
-
-//		val aggregationQueries: List[Query] = aggregatePattern.findAllIn(formattedQueryString).toList.map(q => {
-//			  val aggregateContentPattern(aggregationQueryString) = q;
-//		AggregateQuery(aggregationQueryString, placeholderLookup)
-//		})
-
-		m = aggregatePattern.matcher(formattedQueryString);
-		List<String> aggregationQueries = new ArrayList<String>();
-		while (m.find()) {
-			aggregationQueries.add(m.group());
-		}
-
-//		val collectionNamePattern(collectionName) = formattedQueryString
-
-		String collectionName;
-		m = collectionNamePattern.matcher(formattedQueryString);
-		if (m.find( )) {
-			collectionName = m.group(0);
-		} else {
-			throw new RuntimeException("Undefined collection name");
-		}
-
-//		val queryParts: List[Query] = findQueries ::: plainFindQueries ::: sortQueries ::: skipQueries ::: limitQueries ::: aggregationQueries
-//		if (!queryParts.isEmpty) new MongoQuery(queryParts, collectionName) else throw new RuntimeException("invalid query")
-
-		List<String> queryParts = new ArrayList<String>();
-		queryParts.addAll(findQueries);
-		queryParts.addAll(plainFindQueries);
-		queryParts.addAll(sortQueries);
-		queryParts.addAll(skipQueries);
-		queryParts.addAll(limitQueries);
-		queryParts.addAll(aggregationQueries);
-
-		if (queryParts.size()>0)
-			return new MongoQuery(queryParts, collectionName);
-		else
-			throw new RuntimeException("Invalid query");
+		return new MongoQuery(query);
 	}
-
 }

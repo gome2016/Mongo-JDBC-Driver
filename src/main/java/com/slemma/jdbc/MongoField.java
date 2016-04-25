@@ -17,6 +17,7 @@ public class MongoField
 	private Class clazz;
 	private ArrayList<String> path;
 
+	public static final String FIELD_LVL_DELIMETER=".";
 
 	public MongoField(int type, Class clazz, ArrayList<String> path)
 	{
@@ -37,7 +38,7 @@ public class MongoField
 
 	public String getName()
 	{
-		return StringUtils.join(path, ".");
+		return StringUtils.join(path, this.FIELD_LVL_DELIMETER);
 	}
 
 	public ArrayList<String> getPath()

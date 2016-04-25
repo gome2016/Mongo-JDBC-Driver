@@ -525,7 +525,7 @@ public abstract class AbstractMongoStatement
 	 */
 
 	public int getResultSetType() throws SQLException {
-		return ResultSet.TYPE_SCROLL_INSENSITIVE;
+		return this.resultSetType;
 	}
 
 	/**

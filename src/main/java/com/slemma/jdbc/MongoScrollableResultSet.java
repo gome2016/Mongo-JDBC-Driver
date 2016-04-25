@@ -1,5 +1,6 @@
 package com.slemma.jdbc;
 
+import com.slemma.jdbc.query.MongoResult;
 import org.bson.Document;
 import org.slf4j.LoggerFactory;
 
@@ -79,9 +80,11 @@ public class MongoScrollableResultSet extends ScrollableResultset<Object> implem
 		if (this.isClosed()) {
 			throw new SQLException("This Resultset is Closed");
 		}
-		int columncount = this.getMetaData().getColumnCount();
-		for (int i = 1; i <= columncount; i++) {
-			if (this.getMetaData().getCatalogName(i).equals(columnLabel)) {
+		int columnCount = this.getMetaData().getColumnCount();
+		for (int i = 1; i <= columnCount; i++)
+		{
+			if (this.getMetaData().getColumnLabel(i).equals(columnLabel))
+			{
 				return i;
 			}
 		}

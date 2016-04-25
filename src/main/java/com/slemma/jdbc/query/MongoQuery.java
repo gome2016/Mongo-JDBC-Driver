@@ -1,28 +1,38 @@
 package com.slemma.jdbc.query;
 
-import java.util.List;
+import com.slemma.jdbc.MongoSQLException;
+import org.bson.Document;
 
 /**
  * @author Igor Shestakov.
  */
 public class MongoQuery
 {
-	private List<String> queryParts;
-	private String collectionName;
 
-	public MongoQuery(List<String> queryParts, String collectionName)
+	private final String mqlQueryString;
+	private final Document mqlCommand;
+
+	public MongoQuery(String mqlQuery) throws MongoSQLException
 	{
-		this.queryParts = queryParts;
-		this.collectionName = collectionName;
+		this.mqlQueryString = mqlQuery;
+
+		try
+		{
+			this.mqlCommand = Document.parse(mqlQuery);
+		}
+		catch (Exception e)
+		{
+			throw new MongoSQLException("Invalid query. "+e.getMessage());
+		}
 	}
 
-	public List<String> getQueryParts()
+	public String getMqlQueryString()
 	{
-		return queryParts;
+		return mqlQueryString;
 	}
 
-	public String getCollectionName()
+	public Document getMqlCommand()
 	{
-		return collectionName;
+		return mqlCommand;
 	}
 }

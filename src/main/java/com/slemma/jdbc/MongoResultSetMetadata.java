@@ -1,5 +1,6 @@
 package com.slemma.jdbc;
 
+import com.slemma.jdbc.query.MongoResult;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSetMetaData;

@@ -5,6 +5,8 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.slemma.jdbc.query.MongoBasicResult;
+import com.slemma.jdbc.query.MongoResult;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.LoggerFactory;
@@ -397,7 +399,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 						  "}";
 
 				Document command = Document.parse(query);
-				MongoResult mResult = new MongoResult(db.runCommand(command), db);
+				MongoResult mResult = new MongoBasicResult(db.runCommand(command), db);
 				for (MongoField field : mResult.getFields())
 				{
 					String[] columnMetadata = new String[resulSetColumnCount];

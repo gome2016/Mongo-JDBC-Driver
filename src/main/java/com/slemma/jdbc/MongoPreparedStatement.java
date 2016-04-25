@@ -1,7 +1,9 @@
 package com.slemma.jdbc;
 
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
+import com.slemma.jdbc.query.MongoQuery;
+import com.slemma.jdbc.query.MongoQueryExecutor;
+import com.slemma.jdbc.query.MongoQueryParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -194,84 +196,14 @@ public class MongoPreparedStatement extends AbstractMongoStatement implements Pr
 		if (this.RunnableStatement.contains("?")) {
 			throw new MongoSQLException("Not all parameters set");
 		}
-		this.starttime = System.currentTimeMillis();
-//		Job referencedJob;
-//
-//		// ANTLR Parser
-//		BQQueryParser parser = new BQQueryParser(this.RunnableStatement,
-//				  this.connection);
-//		this.RunnableStatement = parser.parse();
-//
-//		try {
-//			// Gets the Job reference of the completed job with give Query
-//			referencedJob = BQSupportFuncts.startQuery(
-//					  this.connection.getBigquery(),
-//					  this.ProjectId.replace("__", ":").replace("_", "."),
-//					  this.RunnableStatement);
-//			this.logger.info("Executing Query: " + this.RunnableStatement);
-//		}
-//		catch (IOException e) {
-//			throw new MongoSQLException("Something went wrong with the query:\n" + this.RunnableStatement,e);
-//		}
-//		try {
-//			do {
-//				if (BQSupportFuncts.getQueryState(referencedJob,
-//						  this.connection.getBigquery(),
-//						  this.ProjectId.replace("__", ":").replace("_", "."))
-//						  .equals("DONE")) {
-//					if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
-//						return new BQScrollableResultSet(BQSupportFuncts.getQueryResults(
-//								  this.connection.getBigquery(),
-//								  this.ProjectId.replace("__", ":").replace("_", "."),
-//								  referencedJob), this);
-//					} else {
-//						return new BQForwardOnlyResultSet(
-//								  this.connection.getBigquery(),
-//								  this.ProjectId.replace("__", ":").replace("_", "."),
-//								  referencedJob, this);
-//					}
-//				}
-//				// Pause execution for half second before polling job status
-//				// again, to
-//				// reduce unnecessary calls to the BigQUery API and lower
-//				// overall
-//				// application bandwidth.
-//				Thread.sleep(500);
-//				this.logger.debug("slept for 500" + "ms, querytimeout is: "
-//						  + this.querytimeout + "s");
-//			}
-//			while (System.currentTimeMillis() - this.starttime <= (long) this.querytimeout * 1000);
-//			// it runs for a minimum of 1 time
-//		}
-//		catch (IOException e) {
-//			throw new MongoSQLException("Something went wrong with the query:\n" + this.RunnableStatement,e);
-//		}
-//		catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		// here we should kill/stop the running job, but bigquery doesn't
-//		// support that :(
-//		throw new MongoSQLException(
-//				  "Query run took more than the specified timeout");
 
+		this.starttime = System.currentTimeMillis();
 
 		MongoDatabase database = this.connection.getMongoClient().getDatabase(this.connection.getDatabase());
-		Document command = null;
-		try
-		{
-			command = Document.parse(this.RunnableStatement);
-		}
-		catch (Exception e)
-		{
-			throw new MongoSQLException("Invalid query. "+e.getMessage());
-		}
-		MongoResult mongoResult =  new MongoResult(database.runCommand(command), database);
+		MongoQuery mongoQuery = MongoQueryParser.parse(this.RunnableStatement);
+		MongoQueryExecutor executor = new MongoQueryExecutor(database);
+		return executor.run(mongoQuery, this);
 
-		if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
-			return new MongoScrollableResultSet(mongoResult, this);
-		} else {
-			return new MongoForwardOnlyResultSet(mongoResult, this);
-		}
 	}
 
 	/**

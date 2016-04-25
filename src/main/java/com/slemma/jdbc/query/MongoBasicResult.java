@@ -1,6 +1,8 @@
-package com.slemma.jdbc;
+package com.slemma.jdbc.query;
 
 import com.mongodb.client.MongoDatabase;
+import com.slemma.jdbc.ConversionHelper;
+import com.slemma.jdbc.MongoField;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Map;
  * Wrapper for mongo result
  * @author Igor Shestakov.
  */
-public class MongoResult
+public class MongoBasicResult implements MongoResult
 {
 	private MongoDatabase database;
 	private final Document result;
@@ -35,7 +37,7 @@ public class MongoResult
 		}
 	}
 
-	public MongoResult(Document result, MongoDatabase database)
+	public MongoBasicResult(Document result, MongoDatabase database)
 	{
 		this.result = result;
 		if (this.result.containsKey("result"))

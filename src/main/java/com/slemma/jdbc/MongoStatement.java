@@ -1,7 +1,9 @@
 package com.slemma.jdbc;
 
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
+import com.slemma.jdbc.query.MongoQuery;
+import com.slemma.jdbc.query.MongoQueryExecutor;
+import com.slemma.jdbc.query.MongoQueryParser;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
@@ -59,22 +61,9 @@ public class MongoStatement extends AbstractMongoStatement implements java.sql.S
 		this.starttime = System.currentTimeMillis();
 
 		MongoDatabase database = this.connection.getMongoClient().getDatabase(this.connection.getDatabase());
-		Document command = null;
-		try
-		{
-			command = Document.parse(query);
-		}
-		catch (Exception e)
-		{
-			throw new MongoSQLException("Invalid query. "+e.getMessage());
-		}
-		MongoResult mongoResult =  new MongoResult(database.runCommand(command), database);
-
-		if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
-			return new MongoScrollableResultSet(mongoResult, this);
-		} else {
-			return new MongoForwardOnlyResultSet(mongoResult, this);
-		}
+		MongoQuery mongoQuery = MongoQueryParser.parse(query);
+		MongoQueryExecutor executor = new MongoQueryExecutor(database);
+		return executor.run(mongoQuery, this);
 	}
 
 	//------------------------- for Jdk1.7 -----------------------------------

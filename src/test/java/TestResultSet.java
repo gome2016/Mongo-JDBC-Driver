@@ -17,12 +17,10 @@ public class TestResultSet
 {
 
 	private static java.sql.Connection con = null;
-
 	private final static Logger logger = LoggerFactory.getLogger(TestResultSet.class.getName());
 
 	@Before
 	public void checkConnection() {
-
 		try {
 			if (this.con == null || !this.con.isValid(0))
 			{
@@ -227,33 +225,6 @@ public class TestResultSet
 		Assert.assertTrue(true);
 	}
 
-
-	@Test
-	public void mixedSqlMqlDistinctCount() {
-		ResultSet rs;
-		final String query =
-				  "select count(DISTINCT factdata_view._id) as c0 from ({\n" +
-							 "\"aggregate\":\"zips\"\n" +
-							 ", \"pipeline\":[\n" +
-							 "  { \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } }\n" +
-							 "  ,{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }\n" +
-							 "  ]\n" +
-							 "}) as factdata_view"
-				  ;
-		try {
-			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			rs = stmt.executeQuery(query);
-			Assert.assertNotNull(rs);
-
-			int rowCnt = Utils.printResultSet(rs);
-			Assert.assertEquals(1,rowCnt);
-		}
-		catch (SQLException e) {
-			this.logger.error("Exception: " + e.toString());
-			Assert.fail("Exception: " + e.toString());
-		}
-		Assert.assertTrue(true);
-	}
 
 	@Test
 	public void nativeProjectionTest() {
