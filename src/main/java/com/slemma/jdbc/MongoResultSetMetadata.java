@@ -103,7 +103,6 @@ class MongoResultsetMetaData implements ResultSetMetaData
 
 	/**
 	 * {@inheritDoc} <br>
-	 * note: This Can only Return due to bigquery:<br>
 	 * java.sql.Types.FLOAT<br>
 	 * java.sql.Types.BOOLEAN<br>
 	 * java.sql.Types.INTEGER<br>
@@ -208,7 +207,6 @@ class MongoResultsetMetaData implements ResultSetMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * No support in bigquery to get the schema for the column.
 	 * </p>
 	 *
 	 * @return ""
@@ -223,7 +221,6 @@ class MongoResultsetMetaData implements ResultSetMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * No option in BigQuery api to get the Table name from column.
 	 * </p>
 	 *
 	 * @return ""
@@ -238,7 +235,6 @@ class MongoResultsetMetaData implements ResultSetMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * No ato increment option in bigquery.
 	 * </p>
 	 *
 	 * @return false

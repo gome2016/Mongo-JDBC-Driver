@@ -89,14 +89,13 @@ public class MongoConnection implements Connection
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Sets bigquery to null and isclosed to true if the connection is not
-	 * already closed else no operation is performed
 	 * </p>
 	 */
 	@Override
 	public void close() throws SQLException
 	{
 		mongoClient.close();
+
 //		if (!this.isclosed)
 //		{
 //			this.bigquery = null;
@@ -111,7 +110,7 @@ public class MongoConnection implements Connection
 	 * </p>
 	 *
 	 * @throws SQLException <p>
-	 *                      There is no Commit in Google BigQuery + Connection Status
+	 *                      There is no Commit in MongoDb + Connection Status
 	 *                      </p>
 	 */
 	@Override
@@ -120,7 +119,7 @@ public class MongoConnection implements Connection
 //		if (this.isclosed)
 //		{
 //			throw new MongoSQLException(
-//					  "There's no commit in Google BigQuery.\nConnection Status: Closed.");
+//					  "There's no commit in MongoDb.\nConnection Status: Closed.");
 //		}
 	}
 
@@ -438,9 +437,6 @@ public class MongoConnection implements Connection
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Sends a query to BigQuery to get all the datasets contained in the
-	 * project accociated with this Connection object and checks if it's
-	 * succeeded
 	 * </p>
 	 *
 	 * @throws SQLException
@@ -765,7 +761,6 @@ public class MongoConnection implements Connection
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * BigQuery is ReadOnly always so this is a noop
 	 * </p>
 	 *
 	 * @throws MongoSQLException

@@ -117,7 +117,7 @@ public abstract class AbstractMongoStatement
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Executes the given SQL statement on BigQuery (note: it returns only 1
+	 * Executes the given SQL statement on MongoDb (note: it returns only 1
 	 * resultset). This function directly uses executeQuery function
 	 * </p>
 	 */
@@ -195,58 +195,6 @@ public abstract class AbstractMongoStatement
 			throw new MongoSQLException("This Statement is Closed");
 		}
 		this.starttime = System.currentTimeMillis();
-//		Job referencedJob;
-//		// ANTLR Parsing
-//		BQQueryParser parser = new BQQueryParser(querySql, this.connection);
-//		querySql = parser.parse();
-//
-//		try {
-//			// Gets the Job reference of the completed job with give Query
-//			referencedJob = BQSupportFuncts.startQuery(
-//					  this.connection.getBigquery(), this.ProjectId, querySql);
-//			this.logger.info("Executing Query: " + querySql);
-//		}
-//		catch (IOException e) {
-//			throw new MongoSQLException("Something went wrong with the query:\n" + querySql,e);
-//		}
-//		try {
-//			do {
-//				if (BQSupportFuncts.getQueryState(referencedJob,
-//						  this.connection.getBigquery(), this.ProjectId).equals(
-//						  "DONE")) {
-//					if(resultSetType == ResultSet.TYPE_SCROLL_INSENSITIVE) {
-//						return new BQScrollableResultSet(BQSupportFuncts.getQueryResults(
-//								  this.connection.getBigquery(), this.ProjectId,
-//								  referencedJob), this);
-//					} else {
-//						return new BQForwardOnlyResultSet(
-//								  this.connection.getBigquery(),
-//								  this.ProjectId.replace("__", ":").replace("_", "."),
-//								  referencedJob, this);
-//					}
-//				}
-//				// Pause execution for half second before polling job status
-//				// again, to
-//				// reduce unnecessary calls to the BigQUery API and lower
-//				// overall
-//				// application bandwidth.
-//				Thread.sleep(500);
-//				this.logger.debug("slept for 500" + "ms, querytimeout is: "
-//						  + this.querytimeout + "s");
-//			}
-//			while (System.currentTimeMillis() - this.starttime <= (long) this.querytimeout * 1000);
-//			// it runs for a minimum of 1 time
-//		}
-//		catch (IOException e) {
-//			throw new MongoSQLException("Something went wrong with the query:\n" + querySql,e);
-//		}
-//		catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		// here we should kill/stop the running job, but bigquery doesn't
-//		// support that :(
-//		throw new MongoSQLException(
-//				  "Query run took more than the specified timeout");
 
 		throw new UnsupportedOperationException();
 	}
@@ -387,7 +335,7 @@ public abstract class AbstractMongoStatement
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Not implemented yet, since Bigquery Does not support precompiled sql
+	 * Not implemented yet
 	 * </p>
 	 *
 	 * @throws MongoSQLException

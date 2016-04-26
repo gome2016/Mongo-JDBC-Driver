@@ -50,7 +50,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Since bigquery doesn't support stored jobs, we'll return with a false.
 	 * </p>
 	 *
 	 * @return false
@@ -121,7 +120,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Bigquery doesn't has a delete function, we can delete only tables.
 	 * </p>
 	 *
 	 * @return false
@@ -460,158 +458,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 					  }, DMDResultSet.DMDResultSetType.getColumns);
 		}
 
-//		logger.debug("Function call getColumns"
-//				  + "catalog: " + (catalog != null ? catalog : "null") +
-//				  ", schemaPattern: " + (schemaPattern != null ? schemaPattern : "null" )+
-//				  ", tableNamePattern:" +
-//				  (tableNamePattern != null ? tableNamePattern : "null") +
-//				  ", columnNamePattern: " +
-//				  (columnNamePattern != null ? columnNamePattern : "null"));
-//
-//		((MongoConnection)this.getConnection()).getDatabase();
-//		List<Table> Tables = null;
-//		try {
-//			Tables = BQSupportFuncts.getTables(this.connection, catalog,
-//					  schemaPattern, tableNamePattern);
-////            if(Tables == null){ //Because of Crystal Reports It's not elegant, but hey it works!
-////                Tables = BQSupportFuncts.getTables(this.connection, schemaPattern,
-////                        catalog, tableNamePattern);
-////            }
-//		}
-//		catch (IOException e) {
-//			throw new SQLException(e);
-//		}
-//
-//		if (Tables != null) {
-//			List<String[]> data = new ArrayList<String[]>();
-//			for (int i = 0; i < Tables.size(); i++) {
-//				String UparsedId = Tables.get(i).getId();
-//				String ProjectId = BQSupportFuncts
-//						  .getProjectIdFromAnyGetId(UparsedId).replace(":", "__").replace(".", "_");
-//				String DatasetId = BQSupportFuncts
-//						  .getDatasetIdFromTableDotGetId(UparsedId);
-//				String TableId = BQSupportFuncts
-//						  .getTableIdFromTableDotGetId(UparsedId);
-//
-//				List<TableFieldSchema> tblfldschemas = Tables.get(i)
-//						  .getSchema().getFields();
-//				if (tblfldschemas != null && tblfldschemas.size() != 0) {
-//					int index = 1;
-//					for (TableFieldSchema Column : tblfldschemas) {
-//						if (columnNamePattern == null
-//								  || BQSupportFuncts.matchPattern(
-//								  Column.getName(), columnNamePattern)) {
-//							String[] Col = new String[23];
-//							// TABLE_CAT String => table catalog (may be null)
-//							Col[0] = ProjectId;
-//							// TABLE_SCHEM String => table schema (may be null)
-//							Col[1] = DatasetId;
-//							// TABLE_NAME String => table name
-//							Col[2] = TableId;
-//							// COLUMN_NAME String => column name
-//							Col[3] = Column.getName();
-//							// DATA_TYPE int => SQL type from java.sql.Types
-//							Col[4] = String.valueOf(BQSupportFuncts
-//									  .parseToSqlFieldType(Column.getType()));
-//							// TYPE_NAME String => Data source dependent type
-//							// name, for a UDT the type name is fully qualified
-//							Col[5] = Column.getType();
-//							// COLUMN_SIZE int => column size. (In Bigquery max
-//							// colsize is 64kb and its not specifically
-//							// determined for fields)
-//							Col[6] = "0"; //String.valueOf(Column.size());
-//							// BUFFER_LENGTH is not used.
-//							Col[7] = null;
-//							// DECIMAL_DIGITS int => the number of fractional
-//							// digits. Null is returned for data types where
-//							// DECIMAL_DIGITS is not applicable.
-//							Col[8] = null;
-//							// NUM_PREC_RADIX int => Radix (typically either 10
-//							// or 2)
-//							Col[9] = null;
-//							// NULLABLE int => is NULL allowed.
-//							Col[10] = Column.getMode();
-//							// REMARKS String => comment describing column (may
-//							// be null)
-//							Col[11] = null;
-//							// COLUMN_DEF String => default value for the
-//							// column, which should be interpreted as a string
-//							// when the value is enclosed in single quotes (may
-//							// be null)
-//							Col[12] = "String";
-//							// SQL_DATA_TYPE int => unused
-//							Col[13] = Column.getType();
-//							// SQL_DATETIME_SUB int => unused
-//							Col[14] = null;
-//							// CHAR_OCTET_LENGTH int => for char types the
-//							// maximum number of bytes in the column
-//							Col[15] = String.valueOf(64 * 1024);
-//							// ORDINAL_POSITION int => index of column in table
-//							// (starting at 1)
-//							Col[16] = String.valueOf(index);
-//							// IS_NULLABLE String => ISO rules are used to
-//							// determine the nullability for a column.
-//							Col[17] = "";
-//							// SCOPE_CATLOG String => catalog of table that is
-//							// the scope of a reference attribute (null if
-//							// DATA_TYPE isn't REF)
-//							Col[18] = null;
-//							// SCOPE_SCHEMA String => schema of table that is
-//							// the scope of a reference attribute (null if the
-//							// DATA_TYPE isn't REF)
-//							Col[19] = null;
-//							// SCOPE_TABLE String => table name that this the
-//							// scope of a reference attribure (null if the
-//							// DATA_TYPE isn't REF)
-//							Col[20] = null;
-//							// SOURCE_DATA_TYPE short => source type of a
-//							// distinct type or user-generated Ref type, SQL
-//							// type from java.sql.Types (null if DATA_TYPE isn't
-//							// DISTINCT or user-generated REF)
-//							Col[21] = null;
-//							// IS_AUTOINCREMENT String => Indicates whether this
-//							// column is auto incremented
-//							Col[22] = "";
-//							data.add(Col);
-//						}
-//						index++;
-//					}
-//				}
-//			}
-//			if (data.size() == 0) {
-//				return null;
-//			}
-//			else {
-//				String[][] List = new String[data.size()][23];
-//				for (int i = 0; i < data.size(); i++) {
-//					List[i] = data.get(i);
-//				}
-//				return new DMDResultSet(List, new String[] { "TABLE_CAT",
-//						  "TABLE_SCHEM", "TABLE_NAME", "COLUMN_NAME",
-//						  "DATA_TYPE", "TYPE_NAME", "COLUMN_SIZE",
-//						  "BUFFER_LENGTH", "DECIMAL_DIGITS", "NUM_PREC_RADIX",
-//						  "NULLABLE", "REMARKS", "COLUMN_DEF", "SQL_DATA_TYPE",
-//						  "SQL_DATETIME_SUB", "CHAR_OCTET_LENGTH",
-//						  "ORDINAL_POSITION", "IS_NULLABLE", "SCOPE_CATLOG",
-//						  "SCOPE_SCHEMA", "SCOPE_TABLE", "SOURCE_DATA_TYPE",
-//						  "IS_AUTOINCREMENT", }, DMDResultSet.DMDResultSetType.getColumns);
-//			}
-//		}
-//		else {
-//			return new DMDResultSet(new String[][] {
-//					  { null, null, null, null, null, null, null, null, null, null,
-//								 null, null, null, null, null, null, null, null, null, null,
-//								 null, null, null} },
-//					  new String[] { "TABLE_CAT", "TABLE_SCHEM", "TABLE_NAME",
-//								 "COLUMN_NAME", "DATA_TYPE", "TYPE_NAME",
-//								 "COLUMN_SIZE", "BUFFER_LENGTH", "DECIMAL_DIGITS",
-//								 "NUM_PREC_RADIX", "NULLABLE", "REMARKS",
-//								 "COLUMN_DEF", "SQL_DATA_TYPE", "SQL_DATETIME_SUB",
-//								 "CHAR_OCTET_LENGTH", "ORDINAL_POSITION",
-//								 "IS_NULLABLE", "SCOPE_CATLOG", "SCOPE_SCHEMA",
-//								 "SCOPE_TABLE", "SOURCE_DATA_TYPE",
-//								 "IS_AUTOINCREMENT", }, DMDResultSet.DMDResultSetType.getColumns);
-//		}
 	}
 
 	/**
@@ -702,25 +548,26 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Returns "Google Big Query"
+	 * Returns "MONGODB"
 	 * </p>
 	 */
 	@Override
 	public String getDatabaseProductName() throws SQLException
 	{
-		return "Google Big Query";
+		return "MONGODB";
 	}
 
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Returns "google bigquery v2-1.3.3-beta"
+	 * Returns MongoDb product version
 	 * </p>
 	 */
 	@Override
 	public String getDatabaseProductVersion() throws SQLException
 	{
-		return "google bigquery v2-1.3.3-beta";
+		//TODO; implement
+		return "3.2.3";
 	}
 
 	/**
@@ -1149,7 +996,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * No index in bigquery, so limit is not known
 	 * </p>
 	 *
 	 * @return 0
@@ -1320,7 +1166,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * No primary keys in BigQuery, so we return an empty Result Set
 	 * </p>
 	 *
 	 * @return ResultSet
@@ -1427,8 +1272,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
 	 * Not yet impelmented
-	 * https://developers.google.com/bigquery/docs/reference/v2/
-	 * https://developers.google.com/bigquery/docs/query-reference
 	 * </p>
 	 *
 	 * @return an empty Result Set
@@ -1878,7 +1721,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Returns an URL to the Bigquery Homepage.
+	 * Returns an connection URL.
 	 * </p>
 	 */
 	@Override
@@ -2667,7 +2510,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 	@Override
 	public boolean supportsNamedParameters() throws SQLException
 	{
-		return false; // Bigquery doesn't support stored jobs.
+		return false;
 	}
 
 	/**

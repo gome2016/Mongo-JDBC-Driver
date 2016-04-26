@@ -165,8 +165,6 @@ public class MongoPreparedStatement extends AbstractMongoStatement implements Pr
 	/**
 	 * <p>
 	 * <h1>Implementation Details:</h1><br>
-	 * Executes the PreCompiledSQL statement on BigQuery (note: it returns only
-	 * 1 resultset). This function directly uses executeQuery() function
 	 * </p>
 	 */
 	@Override

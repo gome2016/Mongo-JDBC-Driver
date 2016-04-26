@@ -118,6 +118,18 @@ public class TestMetadata
 	}
 
 	@Test
+	public void metadata() {
+		try {
+			DatabaseMetaData metadata = this.con.getMetaData();
+			assertNotNull(metadata);
+			System.out.println(metadata.getDatabaseProductVersion());
+		}
+		catch (SQLException e) {
+			this.logger.error("SQL exception: " + e.toString());
+		}
+	}
+
+	@Test
 	public void metadataGetUserName() {
 		try {
 			DatabaseMetaData metadata = this.con.getMetaData();

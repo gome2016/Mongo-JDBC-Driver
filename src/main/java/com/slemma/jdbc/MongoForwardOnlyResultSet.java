@@ -1666,22 +1666,6 @@ public class MongoForwardOnlyResultSet implements java.sql.ResultSet
 		else
 		{
 			return false;
-//			try {
-//				this.mongoResult = BQSupportFuncts.getQueryResultsDivided(bigquery,
-//						  projectId, completedJob, FETCH_POS, FETCH_SIZE);
-//			}
-//			catch (IOException e) {
-//			} //should not happen
-//			if (this.mongoResult.getRows() == null) {
-//				this.RowsofResult = null;
-//				return false;
-//			}
-//			else {
-//				this.RowsofResult = this.mongoResult.getRows().toArray();
-//				FETCH_POS = FETCH_POS.add(BigInteger.valueOf((long)this.RowsofResult.length));
-//				Cursor = 0;
-//				return true;
-//			}
 		}
 	}
 

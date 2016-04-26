@@ -22,7 +22,7 @@ public class MongoQuery
 		}
 		catch (Exception e)
 		{
-			throw new MongoSQLException("Invalid query. "+e.getMessage());
+			throw new MongoSQLException("Invalid query: " + e.getMessage() + "\n Query: " + mqlQuery);
 		}
 	}
 
