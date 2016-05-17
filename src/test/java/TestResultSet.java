@@ -27,8 +27,8 @@ public class TestResultSet
 				this.logger.info("Testing the JDBC driver");
 				try {
 					Class.forName("com.slemma.jdbc.MongoDriver");
-
-					this.con = DriverManager.getConnection("jdbc:mongodb:mql://192.168.99.100:27017/test");
+//					this.con = DriverManager.getConnection("jdbc:mongodb:mql://192.168.99.100:27017/test");
+					this.con = DriverManager.getConnection("jdbc:mongodb:mql://test:test@127.0.0.1:27017/test?&authMechanism=SCRAM-SHA-1");
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -86,6 +86,33 @@ public class TestResultSet
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
+
+			Utils.printResultSet(rs);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+
+	@Test
+	public void findWithDateTest() {
+		ResultSet rs;
+		String query = "{ \"find\" : \"bios\"}";
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData rsMetadata = rs.getMetaData();
+			System.out.println("Columns metadata:");
+			for (int i=1; i <= rsMetadata.getColumnCount(); i++) {
+				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
+			}
+
+			Assert.assertEquals(12, rsMetadata.getColumnType(1));
 
 			Utils.printResultSet(rs);
 		}

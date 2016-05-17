@@ -29,6 +29,7 @@
 
 package com.slemma.jdbc;
 
+import com.mongodb.MongoClientURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,11 +155,13 @@ public class MongoDriver implements java.sql.Driver
 		if (!acceptsURL(url)) return null;
 
 		url = url.trim();
-		Properties mergedProps = this.parseURL(url, info);
+
+//		Properties mergedProps = this.parseURL(url, info);
+//		url = url.replace(this.PREFIX, "mongodb:");
+//		return new MongoConnection(url, mergedProps);
 
 		url = url.replace(this.PREFIX, "mongodb:");
-
-		return new MongoConnection(url, mergedProps);
+		return new MongoConnection(url, info);
 	}
 
 	/**
@@ -262,6 +265,8 @@ public class MongoDriver implements java.sql.Driver
 	{
 		Properties urlProps = new Properties(defaults);
 
+//		String modifiedUrl = url.replace("jdbc:mongodb:mql://","mongodb://");
+//		MongoClientURI mU =  new MongoClientURI(modifiedUrl);
 	/*
 	  * Parse parameters after the ? in the URL and remove
 	 * them from the original URL.

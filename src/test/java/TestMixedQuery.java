@@ -34,7 +34,8 @@ public class TestMixedQuery
 				try {
 					Class.forName("com.slemma.jdbc.MongoDriver");
 
-					this.con = DriverManager.getConnection("jdbc:mongodb:mql://192.168.99.100:27017/test");
+//					this.con = DriverManager.getConnection("jdbc:mongodb:mql://192.168.99.100:27017/test");
+					this.con = DriverManager.getConnection("jdbc:mongodb:mql://test:test@127.0.0.1:27017/test?&authMechanism=SCRAM-SHA-1");
 				}
 				catch (Exception e) {
 					e.printStackTrace();

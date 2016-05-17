@@ -31,6 +31,11 @@ public class MongoField
 		return type;
 	}
 
+	public void setType(int type)
+	{
+		this.type = type;
+	}
+
 	public String getTypeName()
 	{
 		return ConversionHelper.getSqlTypeName(type);

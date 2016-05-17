@@ -3,6 +3,7 @@ package com.slemma.jdbc.query;
 import com.mongodb.client.MongoDatabase;
 import com.slemma.jdbc.ConversionHelper;
 import com.slemma.jdbc.MongoField;
+import com.slemma.jdbc.MongoFieldPredictor;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -21,22 +22,6 @@ public class MongoBasicResult implements MongoResult
 	private ArrayList<Document> documentList;
 	private final ArrayList<MongoField> fields;
 
-	private void sampleMetadata(Document sampleDocument, ArrayList<String> levelPath)
-	{
-		for (Map.Entry<String, Object> entry : sampleDocument.entrySet())
-		{
-			ArrayList<String> path = (ArrayList<String>) levelPath.clone();
-			path.add(entry.getKey());
-			if (entry.getValue().getClass() == Document.class) {
-				sampleMetadata((Document)entry.getValue(),path);
-			}
-			else {
-				if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
-					fields.add(new MongoField(ConversionHelper.lookup(entry.getValue().getClass()), entry.getValue().getClass(), path));
-			}
-		}
-	}
-
 	public MongoBasicResult(Document result, MongoDatabase database)
 	{
 		this.result = result;
@@ -53,13 +38,9 @@ public class MongoBasicResult implements MongoResult
 		else
 			this.documentList = new ArrayList<Document>(Arrays.asList(this.result));
 
-
 		this.database = database;
-		fields = new ArrayList<>();
-		if (this.getDocumentCount()>0) {
-			Document sampleDoc = this.getDocumentList().get(0);
-			sampleMetadata(sampleDoc, new ArrayList<String>());
-		}
+		MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
+		this.fields = predictor.getFields();
 	}
 
 	public ArrayList<Document> getDocumentList(){

@@ -1,8 +1,8 @@
 package com.slemma.jdbc;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
@@ -52,7 +52,15 @@ public class MongoConnection implements Connection
 		MongoClientURI mongoURI = new MongoClientURI(url);
 		this.mongoClient = new MongoClient(mongoURI);
 		this.url = url;
-		this.database = info.getProperty("database");
+		if (mongoURI.getDatabase() != null)
+			this.database = mongoURI.getDatabase();
+		else
+			this.database = info.getProperty("database");
+
+		//check connection
+//		this.mongoClient.getAddress();
+		Document pingCommand = new Document("ping", "1");
+		mongoClient.getDatabase(this.database).runCommand(pingCommand);
 	}
 
 	public MongoClient getMongoClient()

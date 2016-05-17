@@ -13,6 +13,7 @@ import java.util.Map;
 public class ConversionHelper
 {
 	private static final Map<Class, Integer> javaToSqlRules;
+	private static final Map<Integer, Integer> typeUniversality;
 
 	static
 	{
@@ -35,7 +36,23 @@ public class ConversionHelper
 		javaToSqlRules.put(Double.class, Types.DOUBLE);
 		javaToSqlRules.put(java.sql.Date.class, Types.DATE);
 		javaToSqlRules.put(Time.class, Types.TIME);
+		javaToSqlRules.put(java.util.Date.class, Types.TIMESTAMP);
 		javaToSqlRules.put(Timestamp.class, Types.TIMESTAMP);
+		javaToSqlRules.put(org.bson.types.ObjectId.class, Types.VARCHAR);
+
+		typeUniversality = new HashMap<Integer, Integer>();
+		typeUniversality.put(Types.BINARY, 0);
+		typeUniversality.put(Types.BOOLEAN, 1);
+		typeUniversality.put(Types.SMALLINT, 2);
+		typeUniversality.put(Types.BIGINT, 3);
+		typeUniversality.put(Types.INTEGER, 4);
+		typeUniversality.put(Types.REAL, 5);
+		typeUniversality.put(Types.DOUBLE, 6);
+		typeUniversality.put(Types.TIME, 7);
+		typeUniversality.put(Types.DATE, 8);
+		typeUniversality.put(Types.TIMESTAMP, 9);
+		typeUniversality.put(Types.CHAR, 10);
+		typeUniversality.put(Types.VARCHAR, 11);
 	}
 
 	public static boolean sqlTypeExists(Class javaClass)
@@ -46,6 +63,13 @@ public class ConversionHelper
 	public static int lookup(Class javaClass)
 	{
 		return javaToSqlRules.get(javaClass);
+	}
+
+	public static boolean isSecondTypeMoreUniversality(int type1, int type2) {
+		int type1Priority = typeUniversality.get(type1);
+		int type2Priority = typeUniversality.get(type2);
+
+		return (type2Priority > type1Priority) ? true : false;
 	}
 
 	public static String getSqlTypeName(int type)
