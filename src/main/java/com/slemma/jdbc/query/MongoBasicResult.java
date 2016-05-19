@@ -33,7 +33,7 @@ public class MongoBasicResult implements MongoResult
 				this.documentList = (ArrayList<Document>) cursor.get("firstBatch");
 			}
 			else
-				throw new UnsupportedOperationException("Not implemented yet");
+				throw new UnsupportedOperationException("Not implemented yet. Cursors without firstBatch.");
 		}
 		else
 			this.documentList = new ArrayList<Document>(Arrays.asList(this.result));

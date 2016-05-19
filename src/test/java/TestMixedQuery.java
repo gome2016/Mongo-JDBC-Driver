@@ -8,10 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -160,6 +157,57 @@ public class TestMixedQuery
 
 			int rowCnt = Utils.printResultSet(rs);
 			Assert.assertEquals(7,rowCnt);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void mixedQueryGetDimensionMembers2() {
+		ResultSet rs;
+		final String query =
+				  "select factdata_view.name.last as c0, factdata_view.name.last as c1 " +
+							 "from ({\"find\":\"bios\"}) as factdata_view group by c0, c1 order by c0 ASC"
+				  ;
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void mixedQueryGetDimensionMembers3() {
+		ResultSet rs;
+		final String query =
+				  "select factdata_view._id as c0, factdata_view._id as c1 " +
+							 "from ({\"find\":\"bios\"}) as factdata_view group by c0, c1 order by c0 ASC"
+				  ;
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData rsMetadata = rs.getMetaData();
+			System.out.println("Columns metadata:");
+			for (int i=1; i <= rsMetadata.getColumnCount(); i++) {
+				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
+			}
+
+			//_id must have String type
+			Assert.assertEquals(12, rsMetadata.getColumnType(1));
+
+			int rowCnt = Utils.printResultSet(rs);
 		}
 		catch (SQLException e) {
 			this.logger.error("Exception: " + e.toString());

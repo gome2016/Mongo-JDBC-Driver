@@ -123,6 +123,38 @@ public class TestResultSet
 		Assert.assertTrue(true);
 	}
 
+	@Test
+	public void getObjectForObjectIdFieldTest() {
+		ResultSet rs;
+		String query = "{\"find\":\"bios\", \"filter\":{\"name.first\":\"John\",\"name.last\":\"McCarthy\"}}";
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData rsMetadata = rs.getMetaData();
+			System.out.println("Columns metadata:");
+			for (int i=1; i <= rsMetadata.getColumnCount(); i++) {
+				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
+			}
+
+			//ObjectId type is String
+			Assert.assertEquals(12, rsMetadata.getColumnType(1));
+
+			if (rs.next()) {
+				// ObjectId value must have String type
+				Assert.assertEquals("java.lang.String", rs.getObject(1).getClass().getName());
+			}
+			else {
+				Assert.fail("ResultSet must be not empty");
+			}
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.getMessage());
+		}
+		Assert.assertTrue(true);
+	}
 
 	@Test
 	public void findTestMoreOptions() {

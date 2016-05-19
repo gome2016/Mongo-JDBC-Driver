@@ -23,22 +23,6 @@ public class MongoCountMembersResult implements MongoResult
 	private ArrayList<Document> documentList;
 	private final ArrayList<MongoField> fields;
 
-	private void sampleMetadata(Document sampleDocument, ArrayList<String> levelPath)
-	{
-		for (Map.Entry<String, Object> entry : sampleDocument.entrySet())
-		{
-			ArrayList<String> path = (ArrayList<String>) levelPath.clone();
-			path.add(entry.getKey());
-			if (entry.getValue().getClass() == Document.class) {
-				sampleMetadata((Document)entry.getValue(),path);
-			}
-			else {
-				if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
-					fields.add(new MongoField(ConversionHelper.lookup(entry.getValue().getClass()), entry.getValue().getClass(), path));
-			}
-		}
-	}
-
 	public MongoCountMembersResult(final CountMembersMixedQuery query, Document result, MongoDatabase database)
 	{
 		this.query = query;
@@ -67,7 +51,7 @@ public class MongoCountMembersResult implements MongoResult
 				this.documentList.add(fakeDoc);
 			}
 			else
-				throw new UnsupportedOperationException("Not implemented yet");
+				throw new UnsupportedOperationException("Not implemented yet. Cursors without firstBatch.");
 		}
 		else
 			this.documentList = new ArrayList<Document>(Arrays.asList(this.result));

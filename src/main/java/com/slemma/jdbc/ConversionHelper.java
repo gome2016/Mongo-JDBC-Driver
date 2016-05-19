@@ -153,4 +153,11 @@ public class ConversionHelper
 		return "?";
 	}
 
+
+	public static Object getValueAsObject(int type, Object value) {
+		if (value != null && value.getClass() == org.bson.types.ObjectId.class)
+			return value.toString();
+		else
+			return value;
+	}
 }

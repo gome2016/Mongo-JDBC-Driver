@@ -3,13 +3,10 @@ package com.slemma.jdbc.query;
 import com.mongodb.client.MongoDatabase;
 import com.slemma.jdbc.ConversionHelper;
 import com.slemma.jdbc.MongoField;
-import org.apache.commons.lang3.StringUtils;
+import com.slemma.jdbc.MongoFieldPredictor;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Wrapper for mongo result
@@ -25,31 +22,14 @@ public class MongoGetMembersResult implements MongoResult
 	private ArrayList<Document> documentList;
 	private final ArrayList<MongoField> fields;
 
-	private void sampleMetadata(Document sampleDocument, ArrayList<String> levelPath)
-	{
-		for (Map.Entry<String, Object> entry : sampleDocument.entrySet())
-		{
-			ArrayList<String> path = (ArrayList<String>) levelPath.clone();
-			path.add(entry.getKey());
-			if (entry.getValue().getClass() == Document.class)
-			{
-				sampleMetadata((Document) entry.getValue(), path);
-			}
-			else
-			{
-				if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
-					fields.add(new MongoField(ConversionHelper.lookup(entry.getValue().getClass()), entry.getValue().getClass(), path));
-			}
-		}
-	}
-
 	private Object GetFieldValueFromDocument(Document doc, List<String> path)
 	{
-		if (path.size() > 1)
+		List<String> pathClone = new LinkedList<String>(path);
+		if (pathClone.size() > 1)
 		{
-			Document docProp = (Document) doc.get(path.get(0));
-			path.remove(0);
-			return GetFieldValueFromDocument(docProp, path);
+			Document docProp = (Document) doc.get(pathClone.get(0));
+			pathClone.remove(0);
+			return GetFieldValueFromDocument(docProp, pathClone);
 		}
 		else
 		{
@@ -73,7 +53,7 @@ public class MongoGetMembersResult implements MongoResult
 				sourceDocumentList = (ArrayList<Document>) cursor.get("firstBatch");
 			}
 			else
-				throw new UnsupportedOperationException("Not implemented yet");
+				throw new UnsupportedOperationException("Not implemented yet. Cursors without firstBatch.");
 		}
 		else
 			sourceDocumentList = new ArrayList<Document>(Arrays.asList(this.result));
@@ -92,7 +72,7 @@ public class MongoGetMembersResult implements MongoResult
 				sourceKeyFieldPath.add(this.query.getSourceKeyField());
 			}
 			else	{
-				sourceKeyFieldPath = Arrays.asList(this.query.getSourceKeyField().split(MongoField.FIELD_LVL_DELIMETER));
+				sourceKeyFieldPath = Arrays.asList(this.query.getSourceKeyField().split(MongoField.FIELD_LVL_DELIMETER_REGEX_FOR_SPLIT));
 			}
 			transformedDoc.append(this.query.getResultKeyField(), GetFieldValueFromDocument(sourceDoc, sourceKeyFieldPath));
 
@@ -103,18 +83,18 @@ public class MongoGetMembersResult implements MongoResult
 				sourceNameFieldPath.add(this.query.getSourceNameField());
 			}
 			else	{
-				sourceNameFieldPath = Arrays.asList(this.query.getSourceNameField().split(MongoField.FIELD_LVL_DELIMETER));
+				sourceNameFieldPath = Arrays.asList(this.query.getSourceNameField().split(MongoField.FIELD_LVL_DELIMETER_REGEX_FOR_SPLIT));
 			}
 			transformedDoc.append(this.query.getResultNameField(), GetFieldValueFromDocument(sourceDoc, sourceNameFieldPath));
 
 			this.documentList.add(transformedDoc);
 		}
 		this.database = database;
-		fields = new ArrayList<>();
-		if (this.getDocumentCount() > 0)
-		{
-			Document sampleDoc = this.getDocumentList().get(0);
-			sampleMetadata(sampleDoc, new ArrayList<String>());
+		if (this.getDocumentCount() > 0) {
+			MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
+			fields = predictor.getFields();
+		} else {
+			fields = new ArrayList<>();
 		}
 	}
 

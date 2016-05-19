@@ -140,7 +140,7 @@ public class MongoForwardOnlyResultSet implements java.sql.ResultSet
 			doc = (Document) doc.get(path.get(i));
 		}
 
-		return doc.get(path.get(path.size() - 1));
+		return ConversionHelper.getValueAsObject(field.getType(), doc.get(path.get(path.size() - 1)));
 	}
 
 	@Override

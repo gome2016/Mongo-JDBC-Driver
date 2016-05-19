@@ -17,7 +17,8 @@ public class MongoField
 	private Class clazz;
 	private ArrayList<String> path;
 
-	public static final String FIELD_LVL_DELIMETER=".";
+	public static final String FIELD_LVL_DELIMETER = ".";
+	public static final String FIELD_LVL_DELIMETER_REGEX_FOR_SPLIT = "\\.";
 
 	public MongoField(int type, Class clazz, ArrayList<String> path)
 	{
