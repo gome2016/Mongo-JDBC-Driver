@@ -299,4 +299,16 @@ public class TestResultSet
 		});
 	}
 
+	@Test
+	public void catchMongoCommandException() {
+		String query = "{\"insert\":\"bios\",\"x\":\"5\"}";
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			stmt.executeQuery(query);
+			Assert.fail("Exception expected" );
+		}
+		catch (SQLException e) {
+			this.logger.info("catchMongoCommandException. Ok");
+		}
+	}
 }
