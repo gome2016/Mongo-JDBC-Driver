@@ -68,19 +68,21 @@ public class MongoFieldPredictor
 		{
 			ArrayList<String> path = (ArrayList<String>) levelPath.clone();
 			path.add(entry.getKey());
-			if (entry.getValue().getClass() == Document.class)
-			{
-				sampleMetadata((Document) entry.getValue(), fieldsMap, path);
-			}
-			else
-			{
-				if (ConversionHelper.sqlTypeExists(entry.getValue().getClass())){
-					int dataType = ConversionHelper.lookup(entry.getValue().getClass());
-					MongoField field = new MongoField(dataType, entry.getValue().getClass(), path);
-					if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
-						fieldsMap.put(field.getName(), field);
+			if (entry.getValue() != null) {
+				if (entry.getValue().getClass() == Document.class)
+				{
+					sampleMetadata((Document) entry.getValue(), fieldsMap, path);
 				}
-			}
+				else
+				{
+					if (ConversionHelper.sqlTypeExists(entry.getValue().getClass())){
+						int dataType = ConversionHelper.lookup(entry.getValue().getClass());
+						MongoField field = new MongoField(dataType, entry.getValue().getClass(), path);
+						if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
+							fieldsMap.put(field.getName(), field);
+					}
+				}
+			} //TODO: implement else
 		}
 	}
 }
