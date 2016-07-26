@@ -1,6 +1,7 @@
 package com.slemma.jdbc;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoDatabase;
@@ -397,9 +398,33 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 						  "}";
 
 				Document command = Document.parse(query);
-				MongoResult mResult = new MongoBasicResult(db.runCommand(command), db);
-				for (MongoField field : mResult.getFields())
+				try
 				{
+					MongoResult mResult = new MongoBasicResult(db.runCommand(command), db);
+					for (MongoField field : mResult.getFields())
+					{
+						String[] columnMetadata = new String[resulSetColumnCount];
+						//TABLE_CAT
+						columnMetadata[0] = dbName;
+						//TABLE_SCHEM
+						columnMetadata[1] = dbName;
+						//TABLE_NAME
+						columnMetadata[2] = collectionName;
+						//COLUMN_NAME
+						columnMetadata[3] = field.getName();
+						//DATA_TYPE
+						columnMetadata[4] = String.valueOf(field.getType());
+						//TYPE_NAME
+						columnMetadata[5] = field.getTypeName();
+
+						data.add(columnMetadata);
+					}
+				}
+				catch (MongoCommandException e)
+				{
+					logger.error("Exception occurred: " + e.getMessage(), e);
+
+					/*add fake column*/
 					String[] columnMetadata = new String[resulSetColumnCount];
 					//TABLE_CAT
 					columnMetadata[0] = dbName;
@@ -407,13 +432,6 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 					columnMetadata[1] = dbName;
 					//TABLE_NAME
 					columnMetadata[2] = collectionName;
-					//COLUMN_NAME
-					columnMetadata[3] = field.getName();
-					//DATA_TYPE
-					columnMetadata[4] = String.valueOf(field.getType());
-					//TYPE_NAME
-					columnMetadata[5] = field.getTypeName();
-
 					data.add(columnMetadata);
 				}
 			}
