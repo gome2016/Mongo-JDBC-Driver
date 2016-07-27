@@ -49,7 +49,15 @@ public class MongoConnection implements Connection
 	 */
 	public MongoConnection(String url, Properties info) throws SQLException
 	{
-		MongoClientURI mongoURI = new MongoClientURI(url);
+		MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder();
+		if (info != null) {
+			if (info.containsKey("connectTimeout") && info.get("connectTimeout") != null ) {
+				int connectTimeout = (Integer.valueOf((String)info.get("connectTimeout"))).intValue() * 1000;
+				optionsBuilder = optionsBuilder.serverSelectionTimeout(connectTimeout);
+				optionsBuilder = optionsBuilder.connectTimeout(connectTimeout);
+			}
+		}
+		MongoClientURI mongoURI = new MongoClientURI(url, optionsBuilder);
 		this.mongoClient = new MongoClient(mongoURI);
 		this.url = url;
 		if (mongoURI.getDatabase() != null)
@@ -58,7 +66,6 @@ public class MongoConnection implements Connection
 			this.database = info.getProperty("database");
 
 		//check connection
-//		this.mongoClient.getAddress();
 		Document pingCommand = new Document("ping", "1");
 		mongoClient.getDatabase(this.database).runCommand(pingCommand);
 	}
