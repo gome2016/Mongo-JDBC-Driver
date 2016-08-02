@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
  */
 public class MongoQueryParser
 {
-	private static final Pattern countMembersPattern = Pattern.compile("^(?i)select\\s+count\\s*\\(\\s*distinct\\s+(.+?)\\.(.+)\\s*\\)\\s+as\\s+(.+)\\s+from\\s+\\((\\{(.|\\n)*\\})\\)\\s+as\\s+.*$");
-	private static final Pattern dimMembersPattern = Pattern.compile("^(?i)select\\s+(.+?)\\.(.+)\\s+as\\s+(.+)\\s*,\\s*(.+?)\\.(.+)\\s+as\\s+(.+)\\s*from\\s\\((\\{(.|\\n)*\\})\\)\\sas.*$");
+	private static final Pattern countMembersPattern = Pattern.compile("^(?i)select\\s+count\\s*\\(\\s*distinct\\s+(.+?)\\.(.+)\\s*\\)\\s+as\\s+(.+)\\s+from\\s+\\((\\{(.)*\\})\\)\\s+as\\s+.*$");
+	private static final Pattern dimMembersPattern = Pattern.compile("^(?i)select\\s+(.+?)\\.(.+)\\s+as\\s+(.+)\\s*,\\s*(.+?)\\.(.+)\\s+as\\s+(.+)\\s*from\\s\\((\\{(.)*\\})\\)\\sas.*$");
 
 	public static MongoQuery parse(String query) throws MongoSQLException
 	{
-		String cleanedQuery = query.trim();
+		String cleanedQuery = query.trim().replace("\n", " ");
 
 		Matcher m;
 
