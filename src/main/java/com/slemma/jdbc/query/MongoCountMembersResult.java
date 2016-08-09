@@ -3,6 +3,7 @@ package com.slemma.jdbc.query;
 import com.mongodb.client.MongoDatabase;
 import com.slemma.jdbc.ConversionHelper;
 import com.slemma.jdbc.MongoField;
+import com.slemma.jdbc.MongoSQLException;
 import org.bson.Document;
 
 import java.sql.Types;
@@ -14,20 +15,16 @@ import java.util.Map;
  * Wrapper for mongo result
  * @author Igor Shestakov.
  */
-public class MongoCountMembersResult implements MongoResult
+public class MongoCountMembersResult extends MongoAbstractResult implements MongoResult
 {
-	private MongoDatabase database;
-	private final Document result;
 	private CountMembersMixedQuery query;
 
-	private ArrayList<Document> documentList;
-	private final ArrayList<MongoField> fields;
-
-	public MongoCountMembersResult(final CountMembersMixedQuery query, Document result, MongoDatabase database)
+	public MongoCountMembersResult(final CountMembersMixedQuery query, Document result, MongoDatabase database) throws MongoSQLException
 	{
+		super(result, database, Integer.MAX_VALUE-1);
+
 		this.query = query;
-		this.result = result;
-		this.database = database;
+
 		fields = new ArrayList<>();
 		fields.add(new MongoField(Types.BIGINT, Long.class, new ArrayList<String>(){{add(query.getResultFieldName());}}));
 
@@ -55,32 +52,5 @@ public class MongoCountMembersResult implements MongoResult
 		}
 		else
 			this.documentList = new ArrayList<Document>(Arrays.asList(this.result));
-	}
-
-	public ArrayList<Document> getDocumentList(){
-		return this.documentList;
-	}
-
-	public Object[] asArray(){
-		return this.getDocumentList().toArray();
-	}
-
-	public int getDocumentCount(){
-		return this.getDocumentList().size();
-	}
-
-	public int getColumnCount()
-	{
-		return fields.size();
-	}
-
-	public ArrayList<MongoField> getFields()
-	{
-		return fields;
-	}
-
-	public MongoDatabase getDatabase()
-	{
-		return database;
 	}
 }

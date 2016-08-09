@@ -400,7 +400,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 				Document command = Document.parse(query);
 				try
 				{
-					MongoResult mResult = new MongoBasicResult(db.runCommand(command), db);
+					MongoResult mResult = new MongoBasicResult(db.runCommand(command), db, Integer.MAX_VALUE - 1);
 					for (MongoField field : mResult.getFields())
 					{
 						String[] columnMetadata = new String[resulSetColumnCount];

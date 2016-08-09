@@ -1,5 +1,6 @@
 package com.slemma.jdbc;
 
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.slemma.jdbc.query.MongoQuery;
 import com.slemma.jdbc.query.MongoQueryExecutor;
@@ -197,10 +198,11 @@ public class MongoPreparedStatement extends AbstractMongoStatement implements Pr
 
 		this.starttime = System.currentTimeMillis();
 
-		MongoDatabase database = this.connection.getMongoClient().getDatabase(this.connection.getDatabase());
+//		MongoClient mongoClient = this.connection.getMongoClient();
+//		MongoDatabase database = mongoClient.getDatabase(this.connection.getDatabase());
 		MongoQuery mongoQuery = MongoQueryParser.parse(this.RunnableStatement);
-		MongoQueryExecutor executor = new MongoQueryExecutor(database);
-		return executor.run(mongoQuery, this);
+		MongoQueryExecutor executor = new MongoQueryExecutor(this.connection.getMongoClient());
+		return executor.run(this.connection.getDatabase(), mongoQuery, this);
 
 	}
 

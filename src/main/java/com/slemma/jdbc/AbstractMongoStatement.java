@@ -616,7 +616,7 @@ public abstract class AbstractMongoStatement
 	 * @throws MongoSQLException
 	 */
 	public void setMaxRows(int arg0) throws SQLException {
-		this.resultMaxRowCount = arg0 == 0 ? arg0 : Integer.MAX_VALUE - 1;
+		this.resultMaxRowCount = arg0 != 0 ? arg0 : Integer.MAX_VALUE - 1;
 	}
 
 	/**

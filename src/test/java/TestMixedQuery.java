@@ -70,13 +70,13 @@ public class TestMixedQuery
 
 		Assert.assertNotNull(mixedQuery);
 		if (mixedQuery != null) {
-			Assert.assertEquals("{\n" +
+			Assert.assertEquals(MongoQueryParser.cleanQueryString("{\n" +
 					  "\"aggregate\":\"zips\"\n" +
 					  ", \"pipeline\":[\n" +
 					  "  { \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } }\n" +
 					  "  ,{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }\n" +
 					  "  ]\n" +
-					  "}", mixedQuery.getMqlQueryString());
+					  "}"), mixedQuery.getMqlQueryString());
 		}
 	}
 
@@ -101,13 +101,13 @@ public class TestMixedQuery
 		}
 		Assert.assertNotNull(mixedQuery);
 		if (mixedQuery != null) {
-			Assert.assertEquals("{\n" +
+			Assert.assertEquals(MongoQueryParser.cleanQueryString("{\n" +
 					  "\"aggregate\":\"zips\"\n" +
 					  ", \"pipeline\":[\n" +
 					  "  { \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } }\n" +
 					  "  ,{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }\n" +
 					  "  ]\n" +
-					  "}", mixedQuery.getMqlQueryString());
+					  "}"), mixedQuery.getMqlQueryString());
 		}
 	}
 

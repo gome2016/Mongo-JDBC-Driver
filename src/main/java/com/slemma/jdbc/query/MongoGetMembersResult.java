@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase;
 import com.slemma.jdbc.ConversionHelper;
 import com.slemma.jdbc.MongoField;
 import com.slemma.jdbc.MongoFieldPredictor;
+import com.slemma.jdbc.MongoSQLException;
 import org.bson.Document;
 
 import java.util.*;
@@ -13,14 +14,9 @@ import java.util.*;
  *
  * @author Igor Shestakov.
  */
-public class MongoGetMembersResult implements MongoResult
+public class MongoGetMembersResult extends MongoAbstractResult implements MongoResult
 {
-	private MongoDatabase database;
-	private final Document result;
 	private GetMembersMixedQuery query;
-
-	private ArrayList<Document> documentList;
-	private final ArrayList<MongoField> fields;
 
 	private Object GetFieldValueFromDocument(Document doc, List<String> path)
 	{
@@ -37,26 +33,12 @@ public class MongoGetMembersResult implements MongoResult
 		}
 	}
 
-	public MongoGetMembersResult(final GetMembersMixedQuery query, Document result, MongoDatabase database)
+	public MongoGetMembersResult(final GetMembersMixedQuery query, Document result, MongoDatabase database, int maxRows) throws MongoSQLException
 	{
+		super(result, database, maxRows);
 		this.query = query;
-		this.result = result;
 
-		ArrayList<Document> sourceDocumentList;
-		if (this.result.containsKey("result"))
-			sourceDocumentList = (ArrayList<Document>) this.result.get("result");
-		else if (this.result.containsKey("cursor"))
-		{
-			Document cursor = (Document) this.result.get("cursor");
-			if (cursor.containsKey("firstBatch"))
-			{
-				sourceDocumentList = (ArrayList<Document>) cursor.get("firstBatch");
-			}
-			else
-				throw new UnsupportedOperationException("Not implemented yet. Cursors without firstBatch.");
-		}
-		else
-			sourceDocumentList = new ArrayList<Document>(Arrays.asList(this.result));
+		ArrayList<Document> sourceDocumentList = this.documentList;
 
 		//create transformed DocumentList
 		this.documentList = new ArrayList<Document>();
@@ -89,42 +71,12 @@ public class MongoGetMembersResult implements MongoResult
 
 			this.documentList.add(transformedDoc);
 		}
-		this.database = database;
+
 		if (this.getDocumentCount() > 0) {
 			MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
-			fields = predictor.getFields();
+			this.fields = predictor.getFields();
 		} else {
-			fields = new ArrayList<>();
+			this.fields = new ArrayList<>();
 		}
-	}
-
-	public ArrayList<Document> getDocumentList()
-	{
-		return this.documentList;
-	}
-
-	public Object[] asArray()
-	{
-		return this.getDocumentList().toArray();
-	}
-
-	public int getDocumentCount()
-	{
-		return this.getDocumentList().size();
-	}
-
-	public int getColumnCount()
-	{
-		return fields.size();
-	}
-
-	public ArrayList<MongoField> getFields()
-	{
-		return fields;
-	}
-
-	public MongoDatabase getDatabase()
-	{
-		return database;
 	}
 }

@@ -1,4 +1,5 @@
 import com.mongodb.Block;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.slemma.jdbc.MongoConnection;
 import org.bson.Document;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
+import static java.util.Arrays.asList;
+
 /**
  * @author Igor Shestakov.
  */
@@ -20,17 +23,21 @@ public class TestResultSet
 	private final static Logger logger = LoggerFactory.getLogger(TestResultSet.class.getName());
 
 	@Before
-	public void checkConnection() {
-		try {
+	public void checkConnection()
+	{
+		try
+		{
 			if (this.con == null || !this.con.isValid(0))
 			{
 				this.logger.info("Testing the JDBC driver");
-				try {
+				try
+				{
 					Class.forName("com.slemma.jdbc.MongoDriver");
 //					this.con = DriverManager.getConnection("jdbc:mongodb:mql://192.168.99.100:27017/test");
 					this.con = DriverManager.getConnection("jdbc:mongodb:mql://test:test@127.0.0.1:27017/test?&authMechanism=SCRAM-SHA-1");
 				}
-				catch (Exception e) {
+				catch (Exception e)
+				{
 					e.printStackTrace();
 					this.logger.error("Error in connection" + e.toString());
 					Assert.fail("Exception:" + e.toString());
@@ -38,23 +45,27 @@ public class TestResultSet
 				this.logger.info(((MongoConnection) this.con).getUrl());
 			}
 		}
-		catch (SQLException e) {
-			logger.debug("Oops something went wrong",e);
+		catch (SQLException e)
+		{
+			logger.debug("Oops something went wrong", e);
 		}
 	}
 
 	@Test
-	public void buildInfo() {
+	public void buildInfo()
+	{
 		ResultSet rs;
 		String query = "{\"buildInfo\": 1}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			Utils.printResultSet(rs);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
@@ -62,34 +73,40 @@ public class TestResultSet
 	}
 
 	@Test
-	public void nativeFindTest() {
-		FindIterable<Document> iterable = ((MongoConnection)con).getNativeDatabase().getCollection("restaurants").find(
+	public void nativeFindTest()
+	{
+		FindIterable<Document> iterable = ((MongoConnection) con).getNativeDatabase().getCollection("restaurants").find(
 				  Document.parse("{ $and: [{'borough': { $ne: 'Bronx'} }, {'cuisine':'Irish'}]}")
 		);
 
-		iterable.forEach(new Block<Document>() {
+		iterable.forEach(new Block<Document>()
+		{
 			@Override
-			public void apply(final Document document) {
+			public void apply(final Document document)
+			{
 				System.out.println(document);
 			}
 		});
 	}
 
 	@Test
-	public void findTest() {
+	public void findTest()
+	{
 		ResultSet rs;
 		String query = "{ " +
 				  "\"find\" : \"restaurants\"" +
 				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
 				  "}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			Utils.printResultSet(rs);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
@@ -98,17 +115,20 @@ public class TestResultSet
 
 
 	@Test
-	public void findWithDateTest() {
+	public void findWithDateTest()
+	{
 		ResultSet rs;
 		String query = "{ \"find\" : \"bios\"}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			ResultSetMetaData rsMetadata = rs.getMetaData();
 			System.out.println("Columns metadata:");
-			for (int i=1; i <= rsMetadata.getColumnCount(); i++) {
+			for (int i = 1; i <= rsMetadata.getColumnCount(); i++)
+			{
 				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
 			}
 
@@ -116,7 +136,8 @@ public class TestResultSet
 
 			Utils.printResultSet(rs);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
@@ -124,32 +145,38 @@ public class TestResultSet
 	}
 
 	@Test
-	public void getObjectForObjectIdFieldTest() {
+	public void getObjectForObjectIdFieldTest()
+	{
 		ResultSet rs;
 		String query = "{\"find\":\"bios\", \"filter\":{\"name.first\":\"John\",\"name.last\":\"McCarthy\"}}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			ResultSetMetaData rsMetadata = rs.getMetaData();
 			System.out.println("Columns metadata:");
-			for (int i=1; i <= rsMetadata.getColumnCount(); i++) {
+			for (int i = 1; i <= rsMetadata.getColumnCount(); i++)
+			{
 				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
 			}
 
 			//ObjectId type is String
 			Assert.assertEquals(12, rsMetadata.getColumnType(1));
 
-			if (rs.next()) {
+			if (rs.next())
+			{
 				// ObjectId value must have String type
 				Assert.assertEquals("java.lang.String", rs.getObject(1).getClass().getName());
 			}
-			else {
+			else
+			{
 				Assert.fail("ResultSet must be not empty");
 			}
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.getMessage());
 		}
@@ -157,7 +184,8 @@ public class TestResultSet
 	}
 
 	@Test
-	public void findTestMoreOptions() {
+	public void findTestMoreOptions()
+	{
 		ResultSet rs;
 		String query = "{ " +
 				  "\"find\" : \"restaurants\"" +
@@ -166,15 +194,17 @@ public class TestResultSet
 				  ", \"batchSize\" : 150" +
 				  ", \"maxTimeMS\" : 5000" +
 				  "}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			int rowCnt = Utils.printResultSet(rs);
-			Assert.assertEquals(150,rowCnt);
+			Assert.assertEquals(150, rowCnt);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
@@ -183,7 +213,8 @@ public class TestResultSet
 
 
 	@Test
-	public void findTestLimit() {
+	public void findTestLimit()
+	{
 		ResultSet rs;
 		String query = "{ " +
 				  "\"find\" : \"restaurants\"" +
@@ -191,47 +222,178 @@ public class TestResultSet
 				  ", \"limit\" : 10" +
 				  ", \"batchSize\" : 150" +
 				  "}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			int rowCnt = Utils.printResultSet(rs);
-			Assert.assertEquals(10,rowCnt);
+			Assert.assertEquals(10, rowCnt);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
 		Assert.assertTrue(true);
 	}
 
+	@Test
+	public void findSeveralBatches()
+	{
+		ResultSet rs;
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  ", \"limit\" : 150" +
+				  ", \"batchSize\" : 15" +
+				  "}";
+		try
+		{
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(150, rowCnt);
+		}
+		catch (SQLException e)
+		{
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
 
 	@Test
-	public void findTestLimitResultWithArray() {
+	public void findSeveralBatchesWithMaxRows()
+	{
+		ResultSet rs;
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  ", \"limit\" : 150" +
+				  ", \"batchSize\" : 15" +
+				  "}";
+		try
+		{
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			stmt.setMaxRows(100);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(100, rowCnt);
+		}
+		catch (SQLException e)
+		{
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void maxRowsTest1()
+	{
+		ResultSet rs;
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  ", \"limit\" : 150" +
+				  ", \"batchSize\" : 150" +
+				  "}";
+		try
+		{
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			stmt.setMaxRows(100);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(100, rowCnt);
+		}
+		catch (SQLException e)
+		{
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void maxRowsTest2()
+	{
+		ResultSet rs;
+		String query = "{ " +
+				  "\"find\" : \"restaurants\"" +
+				  ", \"filter\" : { \"$and\" : [{ \"borough\" : { \"$ne\" : \"Bronx\" } }, { \"cuisine\" : \"Irish\" }] } " +
+				  ", \"limit\" : 150" +
+				  ", \"batchSize\" : 24" +
+				  "}";
+		try
+		{
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			stmt.setMaxRows(100);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(100, rowCnt);
+		}
+		catch (SQLException e)
+		{
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void findTestLimitResultWithArray()
+	{
 		ResultSet rs;
 		String query = "{ \"find\" : \"zips\", \"filter\" : { \"$and\" : [{ \"state\" : { \"$ne\" : \"MA\" } }, { \"cuisine\" : {\"$ne\":\"BARRE\"} }] } , \"limit\" : 10, \"batchSize\" : 150}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			ResultSetMetaData mRs = rs.getMetaData();
-			Assert.assertEquals(4,mRs.getColumnCount());
+			Assert.assertEquals(4, mRs.getColumnCount());
 
 			int rowCnt = Utils.printResultSet(rs);
-			Assert.assertEquals(10,rowCnt);
+			Assert.assertEquals(10, rowCnt);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
 		Assert.assertTrue(true);
 	}
 
+	@Test
+	public void nativeAggregateTest1()
+	{
+		AggregateIterable<Document> iterable = ((MongoConnection) con).getNativeDatabase().getCollection("restaurants").aggregate(
+				  asList(new Document("$group", new Document("_id", "$borough").append("count", new Document("$sum", 1))))
+		);
+		iterable.forEach(new Block<Document>()
+		{
+			@Override
+			public void apply(final Document document)
+			{
+				System.out.println(document.toJson());
+			}
+		});
+	}
 
 	@Test
-	public void aggregateTest1() {
+	public void aggregateTest1()
+	{
 		ResultSet rs;
 		final String query =
 				  "{" +
@@ -240,17 +402,18 @@ public class TestResultSet
 							 "{ \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } },\n" +
 							 "{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }" +
 							 "]" +
-							 "}"
-				  ;
-		try {
+							 "}";
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			int rowCnt = Utils.printResultSet(rs);
-			Assert.assertEquals(7,rowCnt);
+			Assert.assertEquals(7, rowCnt);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
@@ -258,7 +421,8 @@ public class TestResultSet
 	}
 
 	@Test
-	public void aggregateTest2() {
+	public void aggregateTest2()
+	{
 		ResultSet rs;
 		final String query =
 				  "{" +
@@ -267,17 +431,18 @@ public class TestResultSet
 							 "{ \"$group\": { \"_id\": \"$state\", \"totalPop\": { \"$sum\": \"$pop\" } } },\n" +
 							 "{ \"$match\": { \"totalPop\": { \"$gte\": 10000000 } } }" +
 							 "]" +
-							 "}"
-				  ;
-		try {
+							 "}";
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(query);
 			Assert.assertNotNull(rs);
 
 			int rowCnt = Utils.printResultSet(rs);
-			Assert.assertEquals(7,rowCnt);
+			Assert.assertEquals(7, rowCnt);
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.error("Exception: " + e.toString());
 			Assert.fail("Exception: " + e.toString());
 		}
@@ -286,28 +451,34 @@ public class TestResultSet
 
 
 	@Test
-	public void nativeProjectionTest() {
-		FindIterable<Document> iterable = ((MongoConnection)con).getNativeDatabase().getCollection("restaurants").find(
+	public void nativeProjectionTest()
+	{
+		FindIterable<Document> iterable = ((MongoConnection) con).getNativeDatabase().getCollection("restaurants").find(
 				  Document.parse("{ $and: [{'borough': { $ne: 'Bronx'} }, {'cuisine':'Irish'}]}")
 		);
 
-		iterable.forEach(new Block<Document>() {
+		iterable.forEach(new Block<Document>()
+		{
 			@Override
-			public void apply(final Document document) {
+			public void apply(final Document document)
+			{
 				System.out.println(document);
 			}
 		});
 	}
 
 	@Test
-	public void catchMongoCommandException() {
+	public void catchMongoCommandException()
+	{
 		String query = "{\"insert\":\"bios\",\"x\":\"5\"}";
-		try {
+		try
+		{
 			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			stmt.executeQuery(query);
-			Assert.fail("Exception expected" );
+			Assert.fail("Exception expected");
 		}
-		catch (SQLException e) {
+		catch (SQLException e)
+		{
 			this.logger.info("catchMongoCommandException. Ok");
 		}
 	}
