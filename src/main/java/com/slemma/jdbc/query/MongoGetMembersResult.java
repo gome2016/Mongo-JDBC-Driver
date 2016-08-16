@@ -42,6 +42,7 @@ public class MongoGetMembersResult extends MongoAbstractResult implements MongoR
 
 		//create transformed DocumentList
 		this.documentList = new ArrayList<Document>();
+		ArrayList<Integer> documentHashList = new ArrayList<>();
 		for (int i = 0; i < sourceDocumentList.size(); i++)
 		{
 			Document sourceDoc = sourceDocumentList.get(i);
@@ -69,7 +70,10 @@ public class MongoGetMembersResult extends MongoAbstractResult implements MongoR
 			}
 			transformedDoc.append(this.query.getResultNameField(), GetFieldValueFromDocument(sourceDoc, sourceNameFieldPath));
 
-			this.documentList.add(transformedDoc);
+			if (documentHashList.indexOf(transformedDoc.hashCode()) == -1) {
+				documentHashList.add(transformedDoc.hashCode());
+				this.documentList.add(transformedDoc);
+			}
 		}
 
 		if (this.getDocumentCount() > 0) {

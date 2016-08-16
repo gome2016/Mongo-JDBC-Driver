@@ -187,6 +187,41 @@ public class TestMixedQuery
 	}
 
 	@Test
+	public void mixedQueryGetDimensionMembersCheckDistinct() {
+		ResultSet rs;
+		try {
+			String query =
+					  "select factdata_view.name.last as c0, factdata_view.name.last as c1 " +
+								 "from ({\"find\":\"bios\"}) as factdata_view group by c0, c1 order by c0 ASC"
+					  ;
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			int rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(10, rowCnt);
+
+			query =
+					  "select factdata_view.name.first as c0, factdata_view.name.first as c1 " +
+								 "from ({\"find\":\"bios\"}) as factdata_view group by c0, c1 order by c0 ASC"
+					  ;
+
+			stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			rowCnt = Utils.printResultSet(rs);
+			Assert.assertEquals(9, rowCnt);
+
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
 	public void mixedQueryGetDimensionMembers3() {
 		ResultSet rs;
 		final String query =
