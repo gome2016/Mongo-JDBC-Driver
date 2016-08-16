@@ -3,6 +3,7 @@ package com.slemma.jdbc;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -155,9 +156,39 @@ public class ConversionHelper
 
 
 	public static Object getValueAsObject(int type, Object value) {
-		if (value != null && value.getClass() == org.bson.types.ObjectId.class)
+		if(value == null) {
+			return null;
+		} else if (value.getClass() == org.bson.types.ObjectId.class)
 			return value.toString();
-		else
+		else if (value.getClass() == java.util.Date.class) {
+			java.util.Date utilDate = (java.util.Date) value;
+			return new java.sql.Timestamp(utilDate.getTime());
+		} else
 			return value;
+	}
+
+	/**
+	 * Retrieves the value  as a <code>java.sql.Date</code> object
+	 * in the Java programming language.
+	 * This method uses the given calendar to construct an appropriate millisecond
+	 * value for the date if the underlying database does not store
+	 * timezone information.
+	 **/
+
+	public static java.sql.Date getValueAsDate(Object value, Calendar cal) {
+		if (value == null)
+			return null;
+
+		//TODO: support timezone
+		if (value.getClass() == java.util.Date.class) {
+			java.util.Date utilDate = (java.util.Date) value;
+			return new java.sql.Date(utilDate.getTime());
+		} else
+			return (java.sql.Date)value;
+	}
+
+
+	public static java.sql.Date getValueAsDate(Object value) {
+		return getValueAsDate(value, null);
 	}
 }

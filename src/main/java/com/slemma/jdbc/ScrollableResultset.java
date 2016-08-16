@@ -612,25 +612,13 @@ abstract class ScrollableResultset<T> implements java.sql.ResultSet {
 	/** {@inheritDoc} */
 	@Override
 	public Date getDate(int columnIndex) throws SQLException {
-		Long value = this.getLong(columnIndex);
-		if (this.wasNull()) {
-			return null;
-		}
-		else {
-			return new java.sql.Date(value);
-		}
+		return ConversionHelper.getValueAsDate(this.getObject(columnIndex));
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public Date getDate(int columnIndex, Calendar cal) throws SQLException {
-		Long value = this.getLong(columnIndex);
-		if (this.wasNull()) {
-			return null;
-		}
-		else {
-			return new java.sql.Date(value + cal.getTimeZone().getRawOffset());
-		}
+		return ConversionHelper.getValueAsDate(this.getObject(columnIndex), cal);
 	}
 
 	/** {@inheritDoc} */

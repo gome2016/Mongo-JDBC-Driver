@@ -16,7 +16,7 @@ public class MongoFieldPredictor
 {
 	private final ArrayList<MongoField> fields = new ArrayList<>();
 
-	public static final int SAMPLING_BATCH_SIZE = 10;
+	public static final int SAMPLING_BATCH_SIZE = 50;
 
 	public MongoFieldPredictor(ArrayList<Document> documents)
 	{

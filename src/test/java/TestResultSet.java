@@ -113,7 +113,6 @@ public class TestResultSet
 		Assert.assertTrue(true);
 	}
 
-
 	@Test
 	public void findWithDateTest()
 	{
@@ -133,6 +132,39 @@ public class TestResultSet
 			}
 
 			Assert.assertEquals(12, rsMetadata.getColumnType(1));
+
+			Utils.printResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void testResultClassForDate()
+	{
+		ResultSet rs;
+		String query = "{ \"find\" : \"bios\"}";
+		try
+		{
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData rsMetadata = rs.getMetaData();
+			Assert.assertEquals(6, rsMetadata.getColumnCount());
+			System.out.println("Columns metadata:");
+			for (int i = 1; i <= rsMetadata.getColumnCount(); i++)
+			{
+				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
+			}
+
+			rs.next();
+
+			Assert.assertEquals(java.sql.Timestamp.class, rs.getObject(4).getClass());
 
 			Utils.printResultSet(rs);
 		}
