@@ -3,8 +3,9 @@
     "name" : {
         "first" : "John", 
         "last" : "Backus"
-    }, 
-    "birth" : ISODate("1924-12-03T05:00:00.000+0000"), 
+    },
+    "iso" : "RU",
+    "birth" : ISODate("1924-12-03T05:00:00.000+0000"),
     "death" : ISODate("2007-03-17T04:00:00.000+0000"), 
     "popularity" : NumberInt(5), 
     "contribs" : [
@@ -41,8 +42,9 @@
     "name" : {
         "first" : "John", 
         "last" : "McCarthy"
-    }, 
-    "birth" : ISODate("1927-09-04T04:00:00.000+0000"), 
+    },
+    "iso" : "RU",
+    "birth" : ISODate("1927-09-04T04:00:00.000+0000"),
     "death" : ISODate("2011-12-24T05:00:00.000+0000"), 
     "popularity" : NumberInt(7), 
     "contribs" : [
@@ -73,8 +75,11 @@
     "name" : {
         "first" : "Grace", 
         "last" : "Hopper"
-    }, 
-    "title" : "Rear Admiral", 
+    },
+    "iso" : "US",
+    "longitude" : 37.447015,
+    "latitude" : -120.251620,
+    "title" : "Rear Admiral",
     "birth" : ISODate("1906-12-09T05:00:00.000+0000"), 
     "death" : ISODate("1992-01-01T05:00:00.000+0000"), 
     "popularity" : NumberInt(9), 
@@ -112,8 +117,11 @@
     "name" : {
         "first" : "Kristen", 
         "last" : "Nygaard"
-    }, 
-    "birth" : ISODate("1926-08-27T04:00:00.000+0000"), 
+    },
+    "iso" : "UK",
+    "longitude" : 50.866916,
+    "latitude" : -3.550736,
+    "birth" : ISODate("1926-08-27T04:00:00.000+0000"),
     "death" : ISODate("2002-08-10T04:00:00.000+0000"), 
     "popularity" : NumberInt(2), 
     "contribs" : [
@@ -143,8 +151,11 @@
     "name" : {
         "first" : "Ole-Johan", 
         "last" : "Dahl"
-    }, 
-    "birth" : ISODate("1931-10-12T04:00:00.000+0000"), 
+    },
+    "iso" : "UK",
+    "longitude" : 56.961684,
+    "latitude" : -4.253861,
+    "birth" : ISODate("1931-10-12T04:00:00.000+0000"),
     "death" : ISODate("2002-06-29T04:00:00.000+0000"), 
     "popularity" : 3.7, 
     "contribs" : [
@@ -174,8 +185,11 @@
     "name" : {
         "first" : "Guido", 
         "last" : "van Rossum"
-    }, 
-    "birth" : ISODate("1956-01-31T05:00:00.000+0000"), 
+    },
+    "iso" : "UK",
+    "longitude" : 53.094232,
+    "latitude" : -0.647428,
+    "birth" : ISODate("1956-01-31T05:00:00.000+0000"),
     "popularity" : NumberInt(10), 
     "contribs" : [
         "Python"
@@ -198,8 +212,11 @@
     "name" : {
         "first" : "Dennis", 
         "last" : "Ritchie"
-    }, 
-    "birth" : ISODate("1941-09-09T04:00:00.000+0000"), 
+    },
+    "iso" : "US",
+    "longitude" : 42.985738,
+    "latitude" : -118.522943,
+    "birth" : ISODate("1941-09-09T04:00:00.000+0000"),
     "death" : ISODate("2011-10-12T04:00:00.000+0000"), 
     "popularity" : 9.6, 
     "contribs" : [
@@ -230,8 +247,11 @@
         "first" : "Yukihiro", 
         "aka" : "Matz", 
         "last" : "Matsumoto"
-    }, 
-    "birth" : ISODate("1965-04-14T04:00:00.000+0000"), 
+    },
+    "iso" : "RU",
+    "longitude" : 56.316361,
+    "latitude" : 38.052403,
+    "birth" : ISODate("1965-04-14T04:00:00.000+0000"),
     "popularity" : 5.3, 
     "contribs" : [
         "Ruby"
@@ -249,8 +269,11 @@
     "name" : {
         "first" : "James", 
         "last" : "Gosling"
-    }, 
-    "birth" : ISODate("1955-05-19T04:00:00.000+0000"), 
+    },
+    "iso" : "RU",
+    "longitude" : 69.095193,
+    "latitude" : 121.429732,
+    "birth" : ISODate("1955-05-19T04:00:00.000+0000"),
     "popularity" : 2.7, 
     "contribs" : [
         "Java"
@@ -273,7 +296,10 @@
     "name" : {
         "first" : "Martin", 
         "last" : "Odersky"
-    }, 
+    },
+    "iso" : "RU",
+    "longitude" : 62.015296,
+    "latitude" : 85.043007,
     "contribs" : [
         "Scala"
     ]
