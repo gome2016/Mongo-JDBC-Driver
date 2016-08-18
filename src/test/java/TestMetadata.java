@@ -165,20 +165,20 @@ public class TestMetadata
 		}
 	}
 
-	@Test
-	public void metadataGetCatalogs() {
-		try {
-			DatabaseMetaData metadata = this.con.getMetaData();
-			ResultSet catalogs = metadata.getCatalogs();
-			assertNotNull(catalogs);
-			while (catalogs.next()){
-				System.out.println(catalogs.getString(1));
-			}
-		}
-		catch (SQLException e) {
-			this.logger.error("SQL exception: " + e.toString());
-		}
-	}
+//	@Test
+//	public void metadataGetCatalogs() {
+//		try {
+//			DatabaseMetaData metadata = this.con.getMetaData();
+//			ResultSet catalogs = metadata.getCatalogs();
+//			assertNotNull(catalogs);
+//			while (catalogs.next()){
+//				System.out.println(catalogs.getString(1));
+//			}
+//		}
+//		catch (SQLException e) {
+//			this.logger.error("SQL exception: " + e.toString());
+//		}
+//	}
 
 	@Test
 	public void metadataGetTables() {

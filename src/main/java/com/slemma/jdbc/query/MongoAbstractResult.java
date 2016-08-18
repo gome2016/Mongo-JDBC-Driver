@@ -22,13 +22,45 @@ public abstract class MongoAbstractResult implements MongoResult
 	protected final Document result;
 	protected final int maxRows;
 
+	private final ArrayList<String> docKeys = new ArrayList<>();
+	private final boolean isDistinct;
 	protected ArrayList<Document> documentList;
 	protected ArrayList<MongoField> fields;
 
-	public MongoAbstractResult(Document result, MongoDatabase database, int maxRows) throws MongoSQLException
+	private void addDocuments(ArrayList<Document> documentList, DocumentTransformer transformer){
+		if (this.documentList == null)
+			this.documentList = new ArrayList<>();
+		if (transformer != null || isDistinct) {
+			for (Document document : documentList)
+			{
+				if (transformer != null) {
+					document = transformer.transform(document);
+				}
+
+				if (isDistinct) {
+					if (docKeys.indexOf(document.toString()) == -1) {
+						docKeys.add(document.toString());
+						this.documentList.add(document);
+					}
+				} else {
+					this.documentList.add(document);
+				}
+			}
+		} else {
+			this.documentList.addAll(documentList);
+		}
+	}
+
+	public MongoAbstractResult(Document result, MongoDatabase database, int maxRows, DocumentTransformer transformer) throws MongoSQLException{
+		this(result, database, maxRows, transformer, false);
+	}
+
+	public MongoAbstractResult(Document result, MongoDatabase database, int maxRows, DocumentTransformer transformer, boolean isDistinct) throws MongoSQLException
 	{
 		this.result = result;
 		this.maxRows = maxRows;
+		this.isDistinct = isDistinct;
+
 		if (this.result.containsKey("result"))
 			this.documentList = (ArrayList<Document>) this.result.get("result");
 		else if (this.result.containsKey("cursor"))
@@ -39,7 +71,7 @@ public abstract class MongoAbstractResult implements MongoResult
 
 			if (cursor.containsKey("firstBatch"))
 			{
-				this.documentList = (ArrayList<Document>) cursor.get("firstBatch");
+				addDocuments((ArrayList<Document>) cursor.get("firstBatch"), transformer);
 			}
 			else
 				throw new UnsupportedOperationException("Not implemented yet. Cursors without firstBatch.");
@@ -64,7 +96,7 @@ public abstract class MongoAbstractResult implements MongoResult
 					Document nextBatchData = database.runCommand(docCommand);
 					Document nextCursor = (Document) nextBatchData.get("cursor");
 					nextBatch = nextCursor.getLong("id");
-					this.documentList.addAll((ArrayList<Document>) nextCursor.get("nextBatch"));
+					addDocuments((ArrayList<Document>) nextCursor.get("nextBatch"), transformer);
 
 					stopFetch = (nextBatch == null || nextBatch == 0 || this.documentList.size() >= maxRows);
 				}
@@ -83,8 +115,12 @@ public abstract class MongoAbstractResult implements MongoResult
 
 		this.database = database;
 
-		MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
-		this.fields = predictor.getFields();
+		if (this.getDocumentCount() > 0) {
+			MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
+			this.fields = predictor.getFields();
+		} else {
+			this.fields = new ArrayList<>();
+		}
 	}
 
 	public ArrayList<Document> getDocumentList()

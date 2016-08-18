@@ -18,14 +18,17 @@ public class MongoGetMembersResult extends MongoAbstractResult implements MongoR
 {
 	private GetMembersMixedQuery query;
 
-	private Object GetFieldValueFromDocument(Document doc, List<String> path)
+	private static Object GetFieldValueFromDocument(Document doc, List<String> path)
 	{
 		List<String> pathClone = new LinkedList<String>(path);
 		if (pathClone.size() > 1)
 		{
 			Document docProp = (Document) doc.get(pathClone.get(0));
 			pathClone.remove(0);
-			return GetFieldValueFromDocument(docProp, pathClone);
+			if (docProp == null)
+				return null;
+			else
+				return GetFieldValueFromDocument(docProp, pathClone);
 		}
 		else
 		{
@@ -35,52 +38,36 @@ public class MongoGetMembersResult extends MongoAbstractResult implements MongoR
 
 	public MongoGetMembersResult(final GetMembersMixedQuery query, Document result, MongoDatabase database, int maxRows) throws MongoSQLException
 	{
-		super(result, database, maxRows);
+		super(
+				  result,
+				  database,
+				  maxRows,
+				  new DocumentTransformer()
+				  {
+					  @Override
+					  public Document transform(Document sourceDocument)
+					  {
+						  Document sourceDoc = sourceDocument;
+						  Document transformedDoc = new Document();
+
+						  List<String> sourceFieldPath;
+						  for (FieldExprDef fieldExprDef : query.getSelectedFields())
+						  {
+							  if (fieldExprDef.getExpression().indexOf(MongoField.FIELD_LVL_DELIMETER) == -1) {
+								  sourceFieldPath = new ArrayList<>();
+								  sourceFieldPath.add(fieldExprDef.getExpression());
+							  }
+							  else	{
+								  sourceFieldPath = Arrays.asList(fieldExprDef.getExpression().split(MongoField.FIELD_LVL_DELIMETER_REGEX_FOR_SPLIT));
+							  }
+							  transformedDoc.append(fieldExprDef.getAlias(), GetFieldValueFromDocument(sourceDoc, sourceFieldPath));
+						  }
+						  return transformedDoc;
+					  }
+				  },
+				  true
+		);
+
 		this.query = query;
-
-		ArrayList<Document> sourceDocumentList = this.documentList;
-
-		//create transformed DocumentList
-		this.documentList = new ArrayList<Document>();
-		ArrayList<Integer> documentHashList = new ArrayList<>();
-		for (int i = 0; i < sourceDocumentList.size(); i++)
-		{
-			Document sourceDoc = sourceDocumentList.get(i);
-			Document transformedDoc = new Document();
-
-			//key field
-			List<String> sourceKeyFieldPath;
-			if (this.query.getSourceKeyField().indexOf(MongoField.FIELD_LVL_DELIMETER) == -1) {
-				sourceKeyFieldPath = new ArrayList<>();
-				sourceKeyFieldPath.add(this.query.getSourceKeyField());
-			}
-			else	{
-				sourceKeyFieldPath = Arrays.asList(this.query.getSourceKeyField().split(MongoField.FIELD_LVL_DELIMETER_REGEX_FOR_SPLIT));
-			}
-			transformedDoc.append(this.query.getResultKeyField(), GetFieldValueFromDocument(sourceDoc, sourceKeyFieldPath));
-
-			//name field
-			List<String> sourceNameFieldPath;
-			if (this.query.getSourceNameField().indexOf(MongoField.FIELD_LVL_DELIMETER) == -1) {
-				sourceNameFieldPath = new ArrayList<>();
-				sourceNameFieldPath.add(this.query.getSourceNameField());
-			}
-			else	{
-				sourceNameFieldPath = Arrays.asList(this.query.getSourceNameField().split(MongoField.FIELD_LVL_DELIMETER_REGEX_FOR_SPLIT));
-			}
-			transformedDoc.append(this.query.getResultNameField(), GetFieldValueFromDocument(sourceDoc, sourceNameFieldPath));
-
-			if (documentHashList.indexOf(transformedDoc.hashCode()) == -1) {
-				documentHashList.add(transformedDoc.hashCode());
-				this.documentList.add(transformedDoc);
-			}
-		}
-
-		if (this.getDocumentCount() > 0) {
-			MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
-			this.fields = predictor.getFields();
-		} else {
-			this.fields = new ArrayList<>();
-		}
 	}
 }

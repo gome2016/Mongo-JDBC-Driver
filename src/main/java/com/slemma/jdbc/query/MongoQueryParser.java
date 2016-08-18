@@ -2,6 +2,7 @@ package com.slemma.jdbc.query;
 
 import com.slemma.jdbc.MongoSQLException;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,8 +11,9 @@ import java.util.regex.Pattern;
  */
 public class MongoQueryParser
 {
-	private static final Pattern countMembersPattern = Pattern.compile("^(?i)select\\s+count\\s*\\(\\s*distinct\\s+(.+?)\\.(.+)\\s*\\)\\s+as\\s+(.+)\\s+from\\s+\\((\\{(.)*\\})\\)\\s+as\\s+.*$");
-	private static final Pattern dimMembersPattern = Pattern.compile("^(?i)select\\s+(.+?)\\.(.+)\\s+as\\s+(.+)\\s*,\\s*(.+?)\\.(.+)\\s+as\\s+(.+)\\s*from\\s\\((\\{(.)*\\})\\)\\sas.*$");
+	private static final Pattern fieldSelectionPattern = Pattern.compile("(.*)\\s+as\\s+(\\w*)");
+	private static final Pattern countMembersPattern = Pattern.compile("^select\\s+count\\s*\\(\\s*distinct\\s+(.+?)\\.(.+)\\s*\\)\\s+as\\s+(.+)\\s+from\\s+\\((\\{(.)*\\})\\)\\s+as\\s+.*$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final Pattern dimMembersPattern = Pattern.compile("^select(.+?)from\\s\\((\\{.+\\})\\)\\sas\\s+(.+)\\s+group by.*$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
 	public static String cleanQueryString(String query){
 		return query.trim().replace("\n", " ");
@@ -35,12 +37,25 @@ public class MongoQueryParser
 		//try get dimension members query
 		m = dimMembersPattern.matcher(cleanedQuery);
 		if (m.matches()) {
-			String sourceKeyField = m.group(2);
-			String resultKeyField = m.group(3);
-			String sourceNameField = m.group(5);
-			String resultNameField = m.group(6);
-			String mqlQuery = m.group(7);
-			return new GetMembersMixedQuery(sourceKeyField, resultKeyField,sourceNameField, resultNameField, mqlQuery);
+			String selectedFieldsString = m.group(1).trim();
+			String mqlQuery = m.group(2);
+			String tableName = m.group(3);
+
+			ArrayList<FieldExprDef> fDefList = new ArrayList<>();
+			String[] fields = selectedFieldsString.split(",");
+			for (String fieldString : fields)
+			{
+				Matcher fieldMatcher = fieldSelectionPattern.matcher(fieldString.trim());
+				if (fieldMatcher.matches()) {
+					String sourceField = fieldMatcher.group(1).replace(tableName + ".","");
+					String resultFieldName = fieldMatcher.group(2);
+					FieldExprDef fDef =  new FieldExprDef(sourceField, resultFieldName);
+					fDefList.add(fDef);
+				}
+			}
+
+			if (fDefList.size()>0)
+				return new GetMembersMixedQuery(fDefList, mqlQuery);
 		}
 
 		return new MongoQuery(query);

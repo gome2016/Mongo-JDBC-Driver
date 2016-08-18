@@ -36,11 +36,13 @@ public class MongoQueryExecutor
 		{
 			if (query instanceof CountMembersMixedQuery)
 			{
-				mongoResult = new MongoCountMembersResult((CountMembersMixedQuery) query, database.runCommand(query.getMqlCommand()), database);
+				mongoResult = new MongoCountMembersFakeResult((CountMembersMixedQuery) query, database);
 			} else if (query instanceof GetMembersMixedQuery) {
-				mongoResult = new MongoGetMembersResult((GetMembersMixedQuery) query, database.runCommand(query.getMqlCommand()), database, statement.getMaxRows());
+				Document queryResult = database.runCommand(query.getMqlCommand());
+				mongoResult = new MongoGetMembersResult((GetMembersMixedQuery) query, queryResult, database, statement.getMaxRows());
 			} else if (query instanceof MongoQuery) {
-				mongoResult = new MongoBasicResult(database.runCommand(query.getMqlCommand()), database, statement.getMaxRows());
+				Document queryResult = database.runCommand(query.getMqlCommand());
+				mongoResult = new MongoBasicResult(queryResult, database, statement.getMaxRows());
 			} else {
 				throw new UnsupportedOperationException("Unhandled query type.");
 			}

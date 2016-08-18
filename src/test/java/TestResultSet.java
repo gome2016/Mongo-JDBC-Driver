@@ -155,7 +155,7 @@ public class TestResultSet
 			Assert.assertNotNull(rs);
 
 			ResultSetMetaData rsMetadata = rs.getMetaData();
-			Assert.assertEquals(6, rsMetadata.getColumnCount());
+			Assert.assertEquals(8, rsMetadata.getColumnCount());
 			System.out.println("Columns metadata:");
 			for (int i = 1; i <= rsMetadata.getColumnCount(); i++)
 			{

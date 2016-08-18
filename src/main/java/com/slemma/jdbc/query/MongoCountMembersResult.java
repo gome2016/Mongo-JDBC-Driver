@@ -21,7 +21,7 @@ public class MongoCountMembersResult extends MongoAbstractResult implements Mong
 
 	public MongoCountMembersResult(final CountMembersMixedQuery query, Document result, MongoDatabase database) throws MongoSQLException
 	{
-		super(result, database, Integer.MAX_VALUE-1);
+		super(result, database, Integer.MAX_VALUE-1, null);
 
 		this.query = query;
 
@@ -29,28 +29,12 @@ public class MongoCountMembersResult extends MongoAbstractResult implements Mong
 		fields.add(new MongoField(Types.BIGINT, Long.class, new ArrayList<String>(){{add(query.getResultFieldName());}}));
 
 		//create fake document
-		if (this.result.containsKey("result")) {
-			Document fakeDoc = new Document(
-					  query.getResultFieldName()
-					  , ((ArrayList)this.result.get("result")).size()
-			);
-			this.documentList = new ArrayList<Document>();
-			this.documentList.add(fakeDoc);
-		}
-		else if (this.result.containsKey("cursor")) {
-			Document cursor = (Document)this.result.get("cursor");
-			if (cursor.containsKey("firstBatch")){
-				Document fakeDoc = new Document(
-						  query.getResultFieldName()
-						  , ((ArrayList)cursor.get("firstBatch")).size()
-				);
-				this.documentList = new ArrayList<Document>();
-				this.documentList.add(fakeDoc);
-			}
-			else
-				throw new UnsupportedOperationException("Not implemented yet. Cursors without firstBatch.");
-		}
-		else
-			this.documentList = new ArrayList<Document>(Arrays.asList(this.result));
+		int docCount = (this.documentList != null) ? this.documentList.size() : 0;
+		Document fakeDoc = new Document(
+				  query.getResultFieldName()
+				  , docCount
+		);
+		this.documentList = new ArrayList<Document>();
+		this.documentList.add(fakeDoc);
 	}
 }

@@ -37,16 +37,21 @@ public class MongoFieldPredictor
 				doc = documents.get(i);
 				Map<String, MongoField> fMC = new LinkedHashMap<String, MongoField>();
 				sampleMetadata(doc, fMC, new ArrayList<String>());
-				for (String fieldId : fM.keySet())
+				for (String fieldId : fMC.keySet())
 				{
-					MongoField field = fM.get(fieldId);
 					MongoField fieldC = fMC.get(fieldId);
-					if (field != null && fieldC !=null
+					MongoField field = fM.get(fieldId);
+					if (field == null)
+					{
+						fM.put(fieldId, fieldC);
+					}
+					else if (fieldC != null
 							  && field.getType() != fieldC.getType()
 							  && ConversionHelper.isSecondTypeMoreUniversality(field.getType(), fieldC.getType()))
 					{
 						field.setType(fieldC.getType());
 					}
+
 				}
 			}
 
@@ -68,14 +73,16 @@ public class MongoFieldPredictor
 		{
 			ArrayList<String> path = (ArrayList<String>) levelPath.clone();
 			path.add(entry.getKey());
-			if (entry.getValue() != null) {
+			if (entry.getValue() != null)
+			{
 				if (entry.getValue().getClass() == Document.class)
 				{
 					sampleMetadata((Document) entry.getValue(), fieldsMap, path);
 				}
 				else
 				{
-					if (ConversionHelper.sqlTypeExists(entry.getValue().getClass())){
+					if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
+					{
 						int dataType = ConversionHelper.lookup(entry.getValue().getClass());
 						MongoField field = new MongoField(dataType, entry.getValue().getClass(), path);
 						if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))

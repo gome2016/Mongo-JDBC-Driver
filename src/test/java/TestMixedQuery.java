@@ -250,4 +250,36 @@ public class TestMixedQuery
 		}
 		Assert.assertTrue(true);
 	}
+
+	@Test
+	//Google maps
+	public void mixedQueryGetDimensionMembers4() {
+		ResultSet rs;
+		final String query =
+				  "select factdata_view._id as c0, factdata_view._id as c1, factdata_view.popularity as c2, factdata_view.popularity as c3  " +
+							 "from ({\"find\":\"bios\"}) as factdata_view group by c0, c1, c2, c3 order by c0 ASC"
+				  ;
+		try {
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData rsMetadata = rs.getMetaData();
+			System.out.println("Columns metadata:");
+			for (int i=1; i <= rsMetadata.getColumnCount(); i++) {
+				System.out.println("Label: " + rsMetadata.getColumnLabel(i) + "; Data type: " + rsMetadata.getColumnTypeName(i));
+			}
+
+			int rowCnt = Utils.printResultSet(rs);
+
+			//_id must have String type
+			Assert.assertEquals(12, rsMetadata.getColumnType(1));
+
+		}
+		catch (SQLException e) {
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
 }
