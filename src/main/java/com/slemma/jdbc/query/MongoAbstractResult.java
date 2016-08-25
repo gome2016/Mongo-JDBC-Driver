@@ -62,7 +62,7 @@ public abstract class MongoAbstractResult implements MongoResult
 		this.isDistinct = isDistinct;
 
 		if (this.result.containsKey("result"))
-			this.documentList = (ArrayList<Document>) this.result.get("result");
+			addDocuments((ArrayList<Document>) this.result.get("result"), transformer);
 		else if (this.result.containsKey("cursor"))
 		{
 			Document cursor = (Document) this.result.get("cursor");

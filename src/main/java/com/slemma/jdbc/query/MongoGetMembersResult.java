@@ -69,5 +69,12 @@ public class MongoGetMembersResult extends MongoAbstractResult implements MongoR
 		);
 
 		this.query = query;
+
+		if (this.getDocumentCount() > 0) {
+			MongoFieldPredictor predictor = new MongoFieldPredictor(this.getDocumentList());
+			this.fields = predictor.getFields();
+		} else {
+			this.fields = new ArrayList<>();
+		}
 	}
 }

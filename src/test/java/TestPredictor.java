@@ -56,7 +56,44 @@ public class TestPredictor
 			Assert.assertNotNull(rs);
 
 			ResultSetMetaData rsMetadata = rs.getMetaData();
-			Assert.assertEquals(11, rsMetadata.getColumnCount());
+			Assert.assertEquals(13, rsMetadata.getColumnCount());
+
+			Utils.printResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			this.logger.error("Exception: " + e.toString());
+			Assert.fail("Exception: " + e.toString());
+		}
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	public void testFieldsPredictionOrder()
+	{
+		ResultSet rs;
+		String query = "{ \"find\" : \"bios2\"}";
+		try
+		{
+			Statement stmt = this.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(query);
+			Assert.assertNotNull(rs);
+
+			ResultSetMetaData rsMetadata = rs.getMetaData();
+
+			Assert.assertEquals("_id", rsMetadata.getColumnName(1));
+			Assert.assertEquals("name.first", rsMetadata.getColumnName(2));
+			Assert.assertEquals("name.aka", rsMetadata.getColumnName(3));
+			Assert.assertEquals("name.last", rsMetadata.getColumnName(4));
+			Assert.assertEquals("iso", rsMetadata.getColumnName(5));
+			Assert.assertEquals("longitude", rsMetadata.getColumnName(6));
+			Assert.assertEquals("latitude", rsMetadata.getColumnName(7));
+			Assert.assertEquals("longitudeString", rsMetadata.getColumnName(8));
+			Assert.assertEquals("latitudeString", rsMetadata.getColumnName(9));
+			Assert.assertEquals("title", rsMetadata.getColumnName(10));
+			Assert.assertEquals("birth", rsMetadata.getColumnName(11));
+			Assert.assertEquals("death", rsMetadata.getColumnName(12));
+			Assert.assertEquals("popularity", rsMetadata.getColumnName(13));
 
 			Utils.printResultSet(rs);
 		}

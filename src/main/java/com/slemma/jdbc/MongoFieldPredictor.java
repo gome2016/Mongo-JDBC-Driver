@@ -27,23 +27,44 @@ public class MongoFieldPredictor
 		{
 			Document doc = documents.get(0);
 			//init fields
-			Map<String, MongoField> fM = new LinkedHashMap<String, MongoField>();
-			sampleMetadata(doc, fM, new ArrayList<String>());
+			sampleMetadata(doc, fields, new ArrayList<String>());
 
 			int cntMax = (this.SAMPLING_BATCH_SIZE <= documents.size()) ? this.SAMPLING_BATCH_SIZE : documents.size();
 			//correction
 			for (int i = 1; i < cntMax; i++)
 			{
 				doc = documents.get(i);
-				Map<String, MongoField> fMC = new LinkedHashMap<String, MongoField>();
+				ArrayList<MongoField> fMC = new ArrayList<>();
 				sampleMetadata(doc, fMC, new ArrayList<String>());
-				for (String fieldId : fMC.keySet())
+				MongoField previousField = null;
+				for (MongoField fieldC : fMC)
 				{
-					MongoField fieldC = fMC.get(fieldId);
-					MongoField field = fM.get(fieldId);
+					//ищем поле среди идентифицированных ранее
+					MongoField field = null;
+					for (MongoField f : fields)
+					{
+						if (f.getName().equals(fieldC.getName())) {
+							field = f;
+							break;
+						}
+					}
+
 					if (field == null)
 					{
-						fM.put(fieldId, fieldC);
+						//ищем позицию для вставки
+						int insertIndex = 0;
+						if (previousField != null) {
+							for (MongoField f : fields)
+							{
+								insertIndex++;
+								if (f.getName().equals(previousField.getName())) {
+									break;
+								}
+							}
+							fields.add(insertIndex, fieldC);
+						} else {
+							fields.add(fieldC);
+						}
 					}
 					else if (fieldC != null
 							  && field.getType() != fieldC.getType()
@@ -52,12 +73,8 @@ public class MongoFieldPredictor
 						field.setType(fieldC.getType());
 					}
 
+					previousField = fieldC;
 				}
-			}
-
-			for (String fieldId : fM.keySet())
-			{
-				fields.add(fM.get(fieldId));
 			}
 		}
 	}
@@ -67,7 +84,7 @@ public class MongoFieldPredictor
 		return fields;
 	}
 
-	private void sampleMetadata(Document sampleDocument, Map<String, MongoField> fieldsMap, ArrayList<String> levelPath)
+	private void sampleMetadata(Document sampleDocument, ArrayList<MongoField> fieldsList, ArrayList<String> levelPath)
 	{
 		for (Map.Entry<String, Object> entry : sampleDocument.entrySet())
 		{
@@ -77,7 +94,7 @@ public class MongoFieldPredictor
 			{
 				if (entry.getValue().getClass() == Document.class)
 				{
-					sampleMetadata((Document) entry.getValue(), fieldsMap, path);
+					sampleMetadata((Document) entry.getValue(), fieldsList, path);
 				}
 				else
 				{
@@ -86,7 +103,7 @@ public class MongoFieldPredictor
 						int dataType = ConversionHelper.lookup(entry.getValue().getClass());
 						MongoField field = new MongoField(dataType, entry.getValue().getClass(), path);
 						if (ConversionHelper.sqlTypeExists(entry.getValue().getClass()))
-							fieldsMap.put(field.getName(), field);
+							fieldsList.add(field);
 					}
 				}
 			} //TODO: implement else

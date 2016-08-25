@@ -164,7 +164,8 @@ public class TestResultSet
 
 			rs.next();
 
-			Assert.assertEquals(java.sql.Timestamp.class, rs.getObject(4).getClass());
+			Assert.assertEquals(java.sql.Timestamp.class, rs.getObject(6).getClass());
+			Assert.assertEquals(java.sql.Timestamp.class, rs.getObject(7).getClass());
 
 			Utils.printResultSet(rs);
 		}
