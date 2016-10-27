@@ -422,7 +422,7 @@ class MongoDatabaseMetadata implements DatabaseMetaData
 				}
 				catch (MongoCommandException e)
 				{
-					logger.error("Exception occurred: " + e.getMessage(), e);
+					logger.warn("Exception occurred: " + e.getMessage(), e);
 
 					/*add fake column*/
 					String[] columnMetadata = new String[resulSetColumnCount];
